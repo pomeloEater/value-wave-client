@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=152ef2b44254cefdebc1967cad908b38&libraries=services,clusterer,drawing"></script>
+  <link rel="stylesheet" href="./tailwind.css"/>
+  <style>
+    details > summary {
+      list-style: none;
+    }
+    details > summary::marker, details > summary::-webkit-details-marker{
+      display: none;
+    }
+    details[open] svg {
+      transform: rotateX(180deg);
+    }
+  </style>
+</head>
+<body class="h-screen text-gray-800">
+  <div id="root" class="flex w-full h-full overflow-hidden">
+    <!-- 접기/펼치기는 어떻게 구현하면 좋을지... 흠 -->
+    <!-- sidebar -->
+    <aside class="absolute z-10 flex flex-col h-full p-5 w-96 gap-y-2">
+      <!-- 검색영역 -->
+      <div>
+        <form class="flex w-full shadow-md">
+          <a href="#" class="flex items-center justify-center p-1 bg-white border-t border-b border-l border-gray-400 rounded-l-lg">로고</a>
+          <input type="text" class="flex-auto p-3 mr-0 text-gray-300 bg-white border-t border-b border-gray-400 focus:outline-none focus:text-gray-800" placeholder="건물명, 지번, 도로명 검색"/>
+          <button type="submit" class="p-1 bg-white border-t border-b border-gray-400">검색</button>
+          <button type="button" class="p-1 bg-white border-t border-b border-r border-gray-400 rounded-r-lg">상세<br/>검색</button>
+        </form>
+      </div>
+      <!-- 범례 -->
+      <div>
+        <div class="w-full h-auto p-2 bg-white border border-gray-400 rounded-lg shadow-md">
+          <details class="flex flex-col w-full">
+            <!-- toggles : 총액/단가 -> (단가인 경우) 토지/건물(일반건물) 전용/분양(집합건물) 평/㎡ -->
+            <summary>
+              <div class="flex flex-row justify-between">
+                <!-- toggles -->
+                <style>
+                  input[type=checkbox]:checked + label::after {
+                    left:50%
+                  }
+                </style>
+                <ul class="flex flex-row gap-2">
+                  <li class="flex self-center gap-0.5">
+                    <label for="toggle-1" class="text-xs">총액</label>
+                    <div class="relative inline-block align-middle transition select-none w-9">
+                      <input type="checkbox" name="unitPrice" id="toggle-1" class="hidden"/>
+                      <label for="toggle-1" 
+                      class="block h-5 p-0.5 border border-gray-400 rounded-full after:bg-violet-500 after:block after:relative after:duration-200 after:ease-linear after:transition-all after:rounded-full after:left-0 after:w-1/2 after:h-full"></label>
+                    </div>
+                    <label for="toggle-1" class="text-xs">단가</label>
+                  </li>
+                  <li class="flex self-center gap-0.5">
+                    <label for="toggle-2" class="text-xs">토지</label>
+                    <div class="relative inline-block align-middle transition select-none w-9">
+                      <input type="checkbox" name="unitPrice" id="toggle-2" class="hidden"/>
+                      <label for="toggle-2" 
+                      class="block h-5 p-0.5 border border-gray-400 rounded-full after:bg-violet-500 after:block after:relative after:duration-200 after:ease-linear after:transition-all after:rounded-full after:left-0 after:w-1/2 after:h-full"></label>
+                    </div>
+                    <label for="toggle-2" class="text-xs">건물</label>
+                  </li>
+                  <li class="flex self-center gap-0.5">
+                    <label for="toggle-3" class="text-xs">전용</label>
+                    <div class="relative inline-block align-middle transition select-none w-9">
+                      <input type="checkbox" name="unitPrice" id="toggle-3" class="hidden"/>
+                      <label for="toggle-3" 
+                      class="block h-5 p-0.5 border border-gray-400 rounded-full after:bg-violet-500 after:block after:relative after:duration-200 after:ease-linear after:transition-all after:rounded-full after:left-0 after:w-1/2 after:h-full"></label>
+                    </div>
+                    <label for="toggle-3" class="text-xs">분양</label>
+                  </li>
+                </ul>
+                <!-- button -->            
+                <div>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </div>
+              </div>
+            </summary>
+            <!-- 기타 toggles  -->
+            <ul class="grid justify-between w-full grid-cols-3 gap-3 mt-2 text-sm">
+              <li class="h-8 leading-8 text-center text-white rounded-md bg-violet-500">실거래</li>
+              <li class="h-8 leading-8 text-center text-white bg-gray-300 rounded-md">경매</li>
+              <li class="h-8 leading-8 text-center text-white rounded-md bg-violet-500">매물</li>
+            </ul>
+            
+            <ul class="flex flex-row justify-around w-full gap-1 mt-2 text-center">
+              <li class="">유형</li>
+              <li class="">가격</li>
+              <li class="">면적</li>
+              <li class="">거래년도</li>
+              <li class="">etc1</li>
+              <li class="">etc2</li>
+              <li class="">etc3</li>
+            </ul>
+          </details>
+        </div>
+      </div>
+      <!-- 매물 (무한스크롤) -->
+      <div>
+        
+      </div>
+    </aside>
+    <!-- 현재 주소 -->
+    <nav class="absolute z-10 w-full text-center top-5">
+      <span id="centerAddressText" class="inline-block h-8 px-3 py-0 text-xs font-semibold leading-8 bg-white shadow-md rounded-3xl">경기도 성남시 수정구 시흥동</span>
+    </nav>
+    <!-- 지도 컨트롤러 -->
+    <aside class="absolute z-10 top-5 right-5">
+      <ul class="flex flex-col items-end gap-3">
+        <li class="w-10 h-10 leading-10 text-center bg-white border border-gray-400 rounded-md shadow-sm" id="mapMyLoc" title="내 위치 보기">위치</li>
+        <li class="w-10 h-10 leading-10 text-center bg-white border border-gray-400 rounded-md shadow-sm" id="mapZoomIn" title="확대">+</li>
+        <li class="w-10 h-10 leading-10 text-center bg-white border border-gray-400 rounded-md shadow-sm" id="mapZoomOut" title="축소">-</li>
+        <li class="w-10 h-10 leading-10 text-center bg-white border border-gray-400 rounded-md shadow-sm" id="mapLayers" title="지도">
+          지도
+          <ul class="invisible absolute right-12 top-[9.75rem] flex flex-row justify-end w-36 gap-3 leading-10 text-center shadow-sm h-10">
+            <li class="w-10 h-10 leading-10 text-center bg-white border border-gray-400 rounded-md shadow-sm" id="mapBaseHybrid" title="스카이뷰">위성</li>
+            <li class="w-10 h-10 leading-10 text-center bg-white border border-gray-400 rounded-md shadow-sm" id="mapBaseUseDistrict" title="지적편집도">지적</li>
+            <li class="w-10 h-10 leading-10 text-center bg-white border border-gray-400 rounded-md shadow-sm" id="mapBaseTerrain" title="지형도">지형</li>
+          </ul>
+        </li>
+        
+        <li class="w-10 h-10 leading-10 text-center bg-white border border-gray-400 rounded-md shadow-sm" id="mapRoadview" title="로드뷰">로드</li>
+      </ul>
+    </aside>
+    <div class="w-full h-full">
+      <div id="mapContainer" style="width:100%; height:100%;"></div>
+      <div id="roadviewContainer" style="width:50%;height:100%;float:left;"></div>
+    </div>
+  </div>
+  <script>
+    const container = document.getElementById('mapContainer');
+    const options = {
+      center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
+      level: 4,
+    };
+    const kakaomap = new kakao.maps.Map(container, options);
+  </script>
+</body>
+</html>
