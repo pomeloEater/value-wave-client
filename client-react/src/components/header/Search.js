@@ -2,7 +2,7 @@
  * Search.js
  * author: owen
  * date: 2022-04-19
- * description: 메인-사이드바-검색 영역
+ * description: 메인-좌측 검색 영역
  */
 import React, { useState } from 'react';
 import * as _ from 'lodash';
@@ -31,6 +31,7 @@ const SearchWrapper = styled.div`
 `;
 const SearchForm = styled.form`
   position: relative;
+  flex: auto;
 `;
 const LogoWrapper = styled.a`
   display: flex;
@@ -41,6 +42,7 @@ const LogoWrapper = styled.a`
   width: 3rem;
 `;
 const SearchInput = styled.input`
+  width: auto;
   flex: 1 1 auto;
   padding: 0.75rem 1.75rem 0.75rem 0.75rem;
   margin-right: 0px;
