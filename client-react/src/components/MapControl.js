@@ -7,10 +7,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import * as _ from 'lodash';
-import { ShadowMiddle } from '../assets/styles/Shadow';
 import { BiCurrentLocation, BiPlus, BiMinus, BiMapAlt } from 'react-icons/bi';
-
-const iconStyle = { width: '1.8rem', height: '2rem', display: 'inline-block' };
 
 const MapControlWrapper = styled.aside`
   position: absolute;
@@ -37,7 +34,7 @@ const MapControlButton = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  ${ShadowMiddle}
+  box-shadow: var(--shadow-md);
   & svg {
     width: 1.8rem;
     height: 2rem;
@@ -58,7 +55,7 @@ const MapControlButtonSubWrapper = styled.div`
   line-height: 2.5rem;
   text-align: center;
   height: 2.5rem;
-  ${ShadowMiddle}
+  box-shadow: var(--shadow-md);
 `;
 
 // const MapControl = ({ mapControls }) => {

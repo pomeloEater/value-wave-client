@@ -5,13 +5,19 @@ import App from './App';
 import { store } from './store/store';
 import { Provider } from 'react-redux';
 import reportWebVitals from './reportWebVitals';
+import GlobalStyle from './assets/styles/globalStyle';
+import { ThemeProvider } from 'styled-components';
+import theme from './assets/styles/theme';
 
 /* React 18 */
 const container = document.getElementById('root');
 const root = createRoot(container);
 root.render(
   <Provider store={store}>
-    <App />
+    <ThemeProvider theme={theme}>
+      <App />
+      <GlobalStyle />
+    </ThemeProvider>
   </Provider>
 );
 

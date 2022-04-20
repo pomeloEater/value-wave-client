@@ -6,7 +6,6 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-import { ShadowMiddle } from '../assets/styles/Shadow';
 
 const NavWrapper = styled.nav`
   position: absolute;
@@ -14,6 +13,12 @@ const NavWrapper = styled.nav`
   width: 100%;
   text-align: center;
   top: 1.25rem;
+  @media ${({ theme }) => theme.device.mobile} {
+    display: none;
+  }
+  @media ${({ theme }) => theme.device.laptop} {
+    display: none;
+  }
 `;
 
 const CenterAddressText = styled.span`
@@ -25,7 +30,7 @@ const CenterAddressText = styled.span`
   line-height: 2rem;
   border-radius: 1.5rem;
   background-color: white;
-  ${ShadowMiddle}
+  box-shadow: var(--shadow-md);
 `;
 
 const Nav = () => {

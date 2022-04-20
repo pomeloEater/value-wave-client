@@ -6,10 +6,10 @@ html, body {
 }
 
 body {
+  min-width: 320px;
   height: 100vh;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: rgb(209 213 219);
 }
 
 #root {

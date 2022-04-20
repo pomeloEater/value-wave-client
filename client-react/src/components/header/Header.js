@@ -16,12 +16,12 @@ const HeaderWrapper = styled.header`
   padding: 1.25rem;
   width: 24rem;
   row-gap: 0.5rem;
-  @media screen and (min-width: 320px) and (max-width: 767px) {
+  @media ${({ theme }) => theme.device.mobile} {
     position: absolute;
     height: inherit;
     width: 100%;
   }
-  @media screen and (min-width: 768px) and (max-width: 1023px) {
+  @media ${({ theme }) => theme.device.laptop} {
   }
 `;
 

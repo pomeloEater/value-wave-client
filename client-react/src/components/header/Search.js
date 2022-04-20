@@ -7,7 +7,6 @@
 import React, { useState } from 'react';
 import * as _ from 'lodash';
 import styled from 'styled-components';
-import { ShadowMiddle } from '../../assets/styles/Shadow';
 import { HiOutlineDocumentSearch, HiOutlineSearch } from 'react-icons/hi';
 const { kakao } = window;
 
@@ -27,7 +26,7 @@ const SearchWrapper = styled.div`
   border: 1px solid #b9bbbe;
   border-radius: 0.5rem;
   justify-content: space-between;
-  ${ShadowMiddle}
+  box-shadow: var(--shadow-md);
 `;
 const SearchForm = styled.form`
   position: relative;
