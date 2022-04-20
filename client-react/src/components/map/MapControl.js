@@ -13,6 +13,7 @@ import {
   zoomIn,
   zoomOut,
   setCurrentPosition,
+  toggleOverlayMapType,
 } from '../../features/mapControlSlice';
 
 const MapControlWrapper = styled.nav`
@@ -22,14 +23,14 @@ const MapControlWrapper = styled.nav`
   right: 1.25rem;
 `;
 
-const MapControlButtonWrapper = styled.div`
+const ButtonWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 2rem;
 `;
 
-const MapControlButton = styled.div`
+const Button = styled.div`
   width: 2.3rem;
   height: 2.3rem;
   line-height: 2.3rem;
@@ -57,11 +58,11 @@ const ZoomButtonWrapper = styled.div`
   height: 5rem;
 `;
 
-const MapControlButtonSubWrapper = styled.div`
+const SubButtonWrapper = styled.div`
   visibility: ${props => props.visibility || 'hidden'};
   position: absolute;
   right: 3rem;
-  top: 9.75rem;
+  top: 11.35rem;
   display: flex;
   flex-direction: row;
   justify-content: end;
@@ -77,85 +78,70 @@ const MapControlButtonSubWrapper = styled.div`
 const MapControl = () => {
   const dispatch = useDispatch();
   const [visibility, setVisibility] = useState('hidden');
-  const handleVisibilityToggle = e => {
+  const handleVisibleClick = () => {
     _.isEqual(visibility, 'hidden')
       ? setVisibility('visible')
       : setVisibility('hidden');
   };
 
-  const mapControls = [
-    {
-      id: 'mapMyLoc',
-      title: '내 위치 보기',
-      icon: <BiCurrentLocation />,
-      onClickFunction: null,
-    },
-    {
-      id: 'mapZoomIN',
-      title: '확대',
-      icon: <BiPlus />,
-      onClickFunction: null,
-    },
-    {
-      id: 'mapZoomOut',
-      title: '축소',
-      icon: <BiMinus />,
-      onClickFunction: null,
-    },
-    {
-      id: 'mapLayers',
-      title: '지도',
-      icon: <BiMapAlt />,
-      onClickFunction: handleVisibilityToggle,
-      subMenu: [
-        {
-          id: 'mapBaseHybrid',
-          title: '스카이뷰',
-          onClickFunction: null,
-          name: '위성',
-        },
-        {
-          id: 'mapBaseUseDistrict',
-          title: '지적편집도',
-          onClickFunction: null,
-          name: '지적',
-        },
-        {
-          id: 'mapBaseTerrain',
-          title: '지형도',
-          onClickFunction: null,
-          name: '지형',
-        },
-      ],
-    },
-  ];
   return (
     <MapControlWrapper>
-      <MapControlButtonWrapper>
-        <MapControlButton
+      <ButtonWrapper>
+        <Button
           key="mapMyLoc"
           onClick={() => dispatch(setCurrentPosition())}
           title="내 위치 보기"
         >
           <BiCurrentLocation />
-        </MapControlButton>
+        </Button>
         <ZoomButtonWrapper>
-          <MapControlButton
+          <Button
             key="mapZoomIn"
             onClick={() => dispatch(zoomIn())}
             title="확대"
           >
             <BiPlus />
-          </MapControlButton>
-          <MapControlButton
+          </Button>
+          <Button
             key="mapZoomOut"
             onClick={() => dispatch(zoomOut())}
             title="축소"
           >
             <BiMinus />
-          </MapControlButton>
+          </Button>
         </ZoomButtonWrapper>
-      </MapControlButtonWrapper>
+        <Button
+          key="mapLayers"
+          title="지도"
+          onClick={() => handleVisibleClick()}
+        >
+          <BiMapAlt />
+          <SubButtonWrapper visibility={visibility}>
+            <Button
+              key="mapBaseHybrid"
+              onClick=""
+              title="스카이뷰"
+              onClickCapture={() => dispatch(toggleOverlayMapType('HYBRID'))}
+            >
+              위성
+            </Button>
+            <Button
+              key="mapBaseUseDistrict"
+              onClick={() => dispatch(toggleOverlayMapType('DISTRICT'))}
+              title="지적편집도"
+            >
+              지적
+            </Button>
+            <Button
+              key="mapBaseTerrain"
+              onClick={() => dispatch(toggleOverlayMapType('TERRIN'))}
+              title="지형도"
+            >
+              지형
+            </Button>
+          </SubButtonWrapper>
+        </Button>
+      </ButtonWrapper>
     </MapControlWrapper>
   );
 };
