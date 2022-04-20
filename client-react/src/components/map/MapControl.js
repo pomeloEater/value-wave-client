@@ -6,7 +6,7 @@
  */
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import { BiCurrentLocation, BiPlus, BiMinus, BiMapAlt } from 'react-icons/bi';
 import { useDispatch } from 'react-redux';
 import {

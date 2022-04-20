@@ -7,7 +7,7 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { initMap } from '../../features/mapControlSlice';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import styled from 'styled-components';
 
 const MapWrapper = styled.div`

@@ -18,7 +18,7 @@ const HeaderWrapper = styled.header`
   row-gap: 0.5rem;
   @media ${({ theme }) => theme.device.mobile} {
     position: absolute;
-    height: inherit;
+    height: auto;
     width: 100%;
   }
   @media ${({ theme }) => theme.device.laptop} {

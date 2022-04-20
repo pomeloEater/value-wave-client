@@ -5,7 +5,7 @@
  * description: 메인-좌측 검색 영역
  */
 import React, { useState } from 'react';
-import * as _ from 'lodash';
+import * as _ from 'lodash-es';
 import styled from 'styled-components';
 import { HiOutlineDocumentSearch, HiOutlineSearch } from 'react-icons/hi';
 const { kakao } = window;
@@ -57,6 +57,16 @@ const SearchButton = styled.button`
   width: 2.1rem;
   right: 0px;
   top: 0.2rem;
+`;
+const LineDiv = styled.div`
+  margin-top: 0.5rem;
+`;
+const LineSpan = styled.span`
+  width: 1px;
+  background: #000;
+  opacity: 0.1;
+  height: 2rem;
+  display: block;
 `;
 const SearchDetailButton = styled.button`
   padding: 0.25rem;
@@ -125,6 +135,9 @@ const Search = () => {
           <HiOutlineSearch style={searchIconStyle} />
         </SearchButton>
       </SearchForm>
+      <LineDiv>
+        <LineSpan />
+      </LineDiv>
       <SearchDetailButton type="button" title="상세검색">
         <HiOutlineDocumentSearch style={detailSearchIconStyle} />
       </SearchDetailButton>
