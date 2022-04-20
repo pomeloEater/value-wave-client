@@ -1,4 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { initMap } from '../features/mapControlSlice';
+import * as _ from 'lodash';
 import styled from 'styled-components';
 const { kakao } = window;
 
@@ -13,27 +16,16 @@ const MapContainer = styled.div`
 `;
 
 const Map = () => {
-  const container = useRef(null);
-  const [map, setMap] = useState(null);
-  const [zoomLevel, setZoomLevel] = useState(4);
+  const { map } = useSelector(state => state.mapControl);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    initMap(zoomLevel);
-  }, []);
-
-  const initMap = ({ zoomLevel }) => {
-    const options = {
-      center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
-      level: zoomLevel,
-    };
-    const kakaomap = new kakao.maps.Map(container.current, options);
-
-    setMap(kakaomap);
-  };
+    if (_.isNull(map)) dispatch(initMap());
+  }, [dispatch, map]);
 
   return (
     <MapWrapper>
-      <MapContainer id="mapContainer" ref={container} />
+      <MapContainer id="mapContainer" />
     </MapWrapper>
   );
 };
