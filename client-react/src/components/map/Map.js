@@ -1,9 +1,14 @@
-import React, { useState, useEffect, useRef } from 'react';
+/**
+ * Map.js
+ * author: owen
+ * date: 2022-04-19
+ * description: 카카오 지도 API를 이용한 지도 컨테이너 영역
+ */
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { initMap } from '../features/mapControlSlice';
+import { initMap } from '../../features/mapControlSlice';
 import * as _ from 'lodash';
 import styled from 'styled-components';
-const { kakao } = window;
 
 const MapWrapper = styled.div`
   width: 100%;

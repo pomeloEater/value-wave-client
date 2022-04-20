@@ -8,11 +8,17 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import * as _ from 'lodash';
 import { BiCurrentLocation, BiPlus, BiMinus, BiMapAlt } from 'react-icons/bi';
+import { useDispatch } from 'react-redux';
+import {
+  zoomIn,
+  zoomOut,
+  setCurrentPosition,
+} from '../../features/mapControlSlice';
 
-const MapControlWrapper = styled.aside`
+const MapControlWrapper = styled.nav`
   position: absolute;
   z-index: 20;
-  top: 1.25rem;
+  top: 6rem;
   right: 1.25rem;
 `;
 
@@ -20,13 +26,13 @@ const MapControlButtonWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0.75rem;
+  gap: 2rem;
 `;
 
 const MapControlButton = styled.div`
-  width: 2.5rem;
-  height: 2.5rem;
-  line-height: 2.5rem;
+  width: 2.3rem;
+  height: 2.3rem;
+  line-height: 2.3rem;
   text-align: center;
   background-color: white;
   border: 1px solid #b9bbbe;
@@ -36,10 +42,19 @@ const MapControlButton = styled.div`
   align-items: center;
   box-shadow: var(--shadow-md);
   & svg {
-    width: 1.8rem;
+    width: 1.5rem;
     height: 2rem;
     display: inline-block;
   }
+  & + & {
+    box-shadow: var(--shadow-none);
+    border-bottom: 1px solid #b9bbeb;
+  }
+`;
+
+const ZoomButtonWrapper = styled.div`
+  width: 2.5rem;
+  height: 5rem;
 `;
 
 const MapControlButtonSubWrapper = styled.div`
@@ -60,6 +75,7 @@ const MapControlButtonSubWrapper = styled.div`
 
 // const MapControl = ({ mapControls }) => {
 const MapControl = () => {
+  const dispatch = useDispatch();
   const [visibility, setVisibility] = useState('hidden');
   const handleVisibilityToggle = e => {
     _.isEqual(visibility, 'hidden')
@@ -116,25 +132,29 @@ const MapControl = () => {
   return (
     <MapControlWrapper>
       <MapControlButtonWrapper>
-        {mapControls.map(control => (
+        <MapControlButton
+          key="mapMyLoc"
+          onClick={() => dispatch(setCurrentPosition())}
+          title="내 위치 보기"
+        >
+          <BiCurrentLocation />
+        </MapControlButton>
+        <ZoomButtonWrapper>
           <MapControlButton
-            key={control.id}
-            onClick={control.onClickFunction}
-            title={control.title}
+            key="mapZoomIn"
+            onClick={() => dispatch(zoomIn())}
+            title="확대"
           >
-            {control.icon}
-            {control.subMenu && (
-              <MapControlButtonSubWrapper visibility={visibility.toString()}>
-                {control.subMenu &&
-                  control.subMenu.map(sub => (
-                    <MapControlButton key={sub.id} title={sub.title}>
-                      {sub.name}
-                    </MapControlButton>
-                  ))}
-              </MapControlButtonSubWrapper>
-            )}
+            <BiPlus />
           </MapControlButton>
-        ))}
+          <MapControlButton
+            key="mapZoomOut"
+            onClick={() => dispatch(zoomOut())}
+            title="축소"
+          >
+            <BiMinus />
+          </MapControlButton>
+        </ZoomButtonWrapper>
       </MapControlButtonWrapper>
     </MapControlWrapper>
   );
