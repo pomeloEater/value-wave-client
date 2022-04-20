@@ -7,7 +7,8 @@ const reducer = {
 };
 
 export const store = configureStore({
-  middleware: getDefaultMiddleware => getDefaultMiddleware().concat(logger),
+  middleware: getDefaultMiddleware =>
+    getDefaultMiddleware({ serializableCheck: false }).concat(logger),
   reducer,
   devTools: process.env.NODE_ENV !== 'production',
 });

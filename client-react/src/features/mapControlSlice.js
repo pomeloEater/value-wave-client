@@ -1,10 +1,23 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 const { kakao } = window;
 
 const initialState = {
   map: null,
   zoomLevel: 4,
 };
+
+const setCurrentPosition = createAsyncThunk(
+  'mapControl/setCurrentPosition',
+  async () => {
+    const pos = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+    return {
+      lat: pos.coords.latitude,
+      lon: pos.coords.longitude,
+    };
+  }
+);
 
 export const mapSlice = createSlice({
   name: 'mapControl',
@@ -20,14 +33,25 @@ export const mapSlice = createSlice({
       state.map = kakaomap;
     },
     zoomIn: state => {
-      state.zoomLevel += 1;
+      state.zoomLevel -= 1;
+      state.map.setLevel(state.zoomLevel);
     },
     zoomOut: state => {
-      state.zoomLevel -= 1;
+      state.zoomLevel += 1;
+      state.map.setLevel(state.zoomLevel);
     },
+  },
+  extraReducers: builder => {
+    builder.addCase(setCurrentPosition.fulfilled, (state, action) => {
+      state.map.setCenter(
+        new kakao.maps.LatLng(action.payload.lat, action.payload.lon)
+      );
+    });
   },
 });
 
 export const { initMap, zoomIn, zoomOut } = mapSlice.actions;
+
+export { setCurrentPosition };
 
 export default mapSlice.reducer;
