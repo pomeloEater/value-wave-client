@@ -2868,7 +2868,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/utils@npm:5.20.0, @typescript-eslint/utils@npm:^5.13.0":
+"@typescript-eslint/utils@npm:5.20.0, @typescript-eslint/utils@npm:^5.10.0, @typescript-eslint/utils@npm:^5.13.0":
   version: 5.20.0
   resolution: "@typescript-eslint/utils@npm:5.20.0"
   dependencies:
@@ -4139,6 +4139,13 @@ __metadata:
     "@testing-library/user-event": ^13.2.1
     autoprefixer: ^10.4.4
     dotenv: ^16.0.0
+    eslint-config-react-app: 6
+    eslint-plugin-flowtype: ^8.0.3
+    eslint-plugin-import: ^2.26.0
+    eslint-plugin-jest: ^26.1.4
+    eslint-plugin-jsx-a11y: ^6.5.1
+    eslint-plugin-testing-library: ^5.3.1
+    install-peers: ^1.0.3
     lodash-es: ^4.17.21
     postcss: ^8.4.12
     pretendard: ^1.2.2
@@ -4330,7 +4337,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"confusing-browser-globals@npm:^1.0.11":
+"confusing-browser-globals@npm:^1.0.10, confusing-browser-globals@npm:^1.0.11":
   version: 1.0.11
   resolution: "confusing-browser-globals@npm:1.0.11"
   checksum: 3afc635abd37e566477f610e7978b15753f0e84025c25d49236f1f14d480117185516bdd40d2a2167e6bed8048641a9854964b9c067e3dcdfa6b5d0ad3c3a5ef
@@ -5382,6 +5389,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-config-react-app@npm:6":
+  version: 6.0.0
+  resolution: "eslint-config-react-app@npm:6.0.0"
+  dependencies:
+    confusing-browser-globals: ^1.0.10
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^4.0.0
+    "@typescript-eslint/parser": ^4.0.0
+    babel-eslint: ^10.0.0
+    eslint: ^7.5.0
+    eslint-plugin-flowtype: ^5.2.0
+    eslint-plugin-import: ^2.22.0
+    eslint-plugin-jest: ^24.0.0
+    eslint-plugin-jsx-a11y: ^6.3.1
+    eslint-plugin-react: ^7.20.3
+    eslint-plugin-react-hooks: ^4.0.8
+    eslint-plugin-testing-library: ^3.9.0
+  peerDependenciesMeta:
+    eslint-plugin-jest:
+      optional: true
+    eslint-plugin-testing-library:
+      optional: true
+  checksum: b265852455b1c10e9c5f0cebe199306fffc7f8e1b6548fcb0bccdc4415c288dfee8ab10717122a32275b91130dfb482dcbbc87d2fb79d8728d4c2bfa889f0915
+  languageName: node
+  linkType: hard
+
 "eslint-config-react-app@npm:^7.0.1":
   version: 7.0.1
   resolution: "eslint-config-react-app@npm:7.0.1"
@@ -5440,7 +5473,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-import@npm:^2.25.3":
+"eslint-plugin-import@npm:^2.25.3, eslint-plugin-import@npm:^2.26.0":
   version: 2.26.0
   resolution: "eslint-plugin-import@npm:2.26.0"
   dependencies:
@@ -5477,6 +5510,23 @@ __metadata:
     jest:
       optional: true
   checksum: fc6da96131f4cbf33d15ef911ec8e600ccd71deb97d73c0ca340427cef7b01ff41a797e2e7d1e351abf97321a46ed0c0acff5ee8eeedac94961dd6dad1f718a9
+  languageName: node
+  linkType: hard
+
+"eslint-plugin-jest@npm:^26.1.4":
+  version: 26.1.4
+  resolution: "eslint-plugin-jest@npm:26.1.4"
+  dependencies:
+    "@typescript-eslint/utils": ^5.10.0
+  peerDependencies:
+    "@typescript-eslint/eslint-plugin": ^5.0.0
+    eslint: ^6.0.0 || ^7.0.0 || ^8.0.0
+  peerDependenciesMeta:
+    "@typescript-eslint/eslint-plugin":
+      optional: true
+    jest:
+      optional: true
+  checksum: f9989a853a165ad1afc077d7d75582391d511e8e14145bb67c76b0ad70a0966358311659da0e82162832bd23a327c2bd1d15dd5d3917f69bb8c14d256e8e1d77
   languageName: node
   linkType: hard
 
@@ -5535,7 +5585,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-testing-library@npm:^5.0.1":
+"eslint-plugin-testing-library@npm:^5.0.1, eslint-plugin-testing-library@npm:^5.3.1":
   version: 5.3.1
   resolution: "eslint-plugin-testing-library@npm:5.3.1"
   dependencies:
@@ -5754,6 +5804,15 @@ __metadata:
     signal-exit: ^3.0.3
     strip-final-newline: ^2.0.0
   checksum: fba9022c8c8c15ed862847e94c252b3d946036d7547af310e344a527e59021fd8b6bb0723883ea87044dc4f0201f949046993124a42ccb0855cae5bf8c786343
+  languageName: node
+  linkType: hard
+
+"executioner@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "executioner@npm:2.0.1"
+  dependencies:
+    mixly: ^1.0.0
+  checksum: 2de2cec06240c8f574f13c550cc7dfeeeb06005a2d71dab7cc84a97e3e2bb456c9aaccf36db2865bcb231447d29f6bab29d1310d8fa3fd86e0a0449ec75b72f0
   languageName: node
   linkType: hard
 
@@ -6150,6 +6209,13 @@ __metadata:
   dependencies:
     node-gyp: latest
   conditions: os=darwin
+  languageName: node
+  linkType: hard
+
+"fulcon@npm:^1.0.1":
+  version: 1.0.2
+  resolution: "fulcon@npm:1.0.2"
+  checksum: 212a4b4d699601b91c3980bd41ff1a320dd36d9a61465d333bc3ea41d62109328f51d21a81f6cff5ba952b1dd259198502fb6bfd4a9460c515511e6ff5ce73f3
   languageName: node
   linkType: hard
 
@@ -6796,6 +6862,15 @@ __metadata:
   version: 1.3.8
   resolution: "ini@npm:1.3.8"
   checksum: dfd98b0ca3a4fc1e323e38a6c8eb8936e31a97a918d3b377649ea15bdb15d481207a0dda1021efbd86b464cae29a0d33c1d7dcaf6c5672bee17fa849bc50a1b3
+  languageName: node
+  linkType: hard
+
+"install-peers@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "install-peers@npm:1.0.3"
+  dependencies:
+    executioner: ^2.0.1
+  checksum: 56b8ea27cf10f44cf9366fb37b7ae582bfefd0f6b20f21f9feda02e1fccc851565e763a8ef77b98c9962f1dab627b8aa51a60304f9b481c2fdb0b3c403abe5c7
   languageName: node
   linkType: hard
 
@@ -8360,6 +8435,15 @@ __metadata:
     minipass: ^3.0.0
     yallist: ^4.0.0
   checksum: f1fdeac0b07cf8f30fcf12f4b586795b97be856edea22b5e9072707be51fc95d41487faec3f265b42973a304fe3a64acd91a44a3826a963e37b37bafde0212c3
+  languageName: node
+  linkType: hard
+
+"mixly@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "mixly@npm:1.0.0"
+  dependencies:
+    fulcon: ^1.0.1
+  checksum: 9cf488349f6f7ac8ba6a167cc87fb6f39c7341068a606524906176e2cc2f0677582bf6de3b92ef7b1701902e7f38530f9acbfc66ee450d97abe4132e18ce603a
   languageName: node
   linkType: hard
 
