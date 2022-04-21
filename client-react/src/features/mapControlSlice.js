@@ -10,12 +10,15 @@ const mapTypeIds = {
 
 const initialState = {
   map: null,
+  clusterer: null,
   zoomLevel: 4,
   overlay: {
     HYBRID: false,
     TERRAIN: false,
     DISTRICT: false,
   },
+  myLocation: null,
+  markers: [],
 };
 
 /**
@@ -35,6 +38,21 @@ const getCurrentPosition = createAsyncThunk(
     };
   }
 );
+
+/**
+ * 지도에 마커를 만든다(임시)
+ * @param {*} state
+ * @param {kakao.maps.LatLng} locPosition
+ */
+const displayMarker = (state, locPosition) => {
+  state.myLocation ? state.myLocation.setMap(null) : '';
+  const marker = new kakao.maps.CustomOverlay({
+    position: locPosition,
+    map: state.map,
+    content: '<div class="myLocation"></div>',
+  });
+  state.myLocation = marker;
+};
 
 /**
  * 지도 컨트롤 slice
@@ -88,9 +106,14 @@ export const mapSlice = createSlice({
   },
   extraReducers: builder => {
     builder.addCase(getCurrentPosition.fulfilled, (state, action) => {
-      state.map.setCenter(
-        new kakao.maps.LatLng(action.payload.lat, action.payload.lon)
+      const locPosition = new kakao.maps.LatLng(
+        action.payload.lat,
+        action.payload.lon
       );
+      state.zoomLevel = 4;
+      state.map.setLevel(state.zoomLevel);
+      state.map.setCenter(locPosition);
+      displayMarker(state, locPosition);
     });
   },
 });

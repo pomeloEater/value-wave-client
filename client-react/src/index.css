@@ -19,3 +19,11 @@ body {
   overflow: hidden;
   color: rgb(31 41 55)
 }
+
+.myLocation {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background-color: red;
+  border: 1px solid black
+}
