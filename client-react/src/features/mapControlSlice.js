@@ -1,11 +1,9 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { isEqual } from 'lodash-es';
 const { kakao } = window;
 
-const mapTypeId = {
-  ROADMAP: kakao.maps.MapTypeId.ROADMAP,
-  SKYVIEW: kakao.maps.MapTypeId.SKYVIEW,
-  HYBRID: kakao.maps.MapTypeId.HYBRID,
-  TERRIN: kakao.maps.MapTypeId.TERRIN,
+const mapTypeIds = {
+  TERRAIN: kakao.maps.MapTypeId.TERRAIN,
   DISTRICT: kakao.maps.MapTypeId.USE_DISTRICT,
   ROADVIEW: kakao.maps.MapTypeId.ROADVIEW,
 };
@@ -15,12 +13,17 @@ const initialState = {
   zoomLevel: 4,
   overlay: {
     HYBRID: false,
-    TERRIN: false,
+    TERRAIN: false,
     DISTRICT: false,
   },
 };
 
-const setCurrentPosition = createAsyncThunk(
+/**
+ * 현재 GPS 위치 가져오기
+ * @returns lat 위도
+ * @returns lon 경도
+ */
+const getCurrentPosition = createAsyncThunk(
   'mapControl/setCurrentPosition',
   async () => {
     const pos = await new Promise((resolve, reject) => {
@@ -33,10 +36,17 @@ const setCurrentPosition = createAsyncThunk(
   }
 );
 
+/**
+ * 지도 컨트롤 slice
+ */
 export const mapSlice = createSlice({
   name: 'mapControl',
   initialState,
   reducers: {
+    /**
+     * 지도 초기화
+     * @param {*} state
+     */
     initMap: state => {
       const container = document.getElementById('mapContainer');
       const options = {
@@ -46,6 +56,10 @@ export const mapSlice = createSlice({
       const kakaomap = new kakao.maps.Map(container, options);
       state.map = kakaomap;
     },
+    /**
+     * 지도 확대/축소
+     * @param {*} state
+     */
     zoomIn: state => {
       state.zoomLevel -= 1;
       state.map.setLevel(state.zoomLevel);
@@ -54,19 +68,26 @@ export const mapSlice = createSlice({
       state.zoomLevel += 1;
       state.map.setLevel(state.zoomLevel);
     },
+    /**
+     * 지도 오버레이 설정
+     * @param {*} state
+     * @param {*} action MapTypeId
+     */
     toggleOverlayMapType: (state, action) => {
-      console.log(action.payload);
-      console.log(state.overlay[action.payload]);
-      if (state.overlay[action.payload]) {
-        state.map.removeOverlayMapTypeId(mapTypeId[action.payload]);
+      if (isEqual(action.payload, 'HYBRID')) {
+        state.overlay[action.payload]
+          ? state.map.setMapTypeId(kakao.maps.MapTypeId.ROADMAP)
+          : state.map.setMapTypeId(kakao.maps.MapTypeId.HYBRID);
       } else {
-        state.map.addOverlayMapTypeId(mapTypeId[action.payload]);
+        state.overlay[action.payload]
+          ? state.map.removeOverlayMapTypeId(mapTypeIds[action.payload])
+          : state.map.addOverlayMapTypeId(mapTypeIds[action.payload]);
       }
       state.overlay[action.payload] = !state.overlay[action.payload];
     },
   },
   extraReducers: builder => {
-    builder.addCase(setCurrentPosition.fulfilled, (state, action) => {
+    builder.addCase(getCurrentPosition.fulfilled, (state, action) => {
       state.map.setCenter(
         new kakao.maps.LatLng(action.payload.lat, action.payload.lon)
       );
@@ -77,6 +98,6 @@ export const mapSlice = createSlice({
 export const { initMap, zoomIn, zoomOut, toggleOverlayMapType } =
   mapSlice.actions;
 
-export { setCurrentPosition };
+export { getCurrentPosition as setCurrentPosition };
 
 export default mapSlice.reducer;

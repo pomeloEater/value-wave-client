@@ -6,7 +6,6 @@
  */
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import * as _ from 'lodash-es';
 import { BiCurrentLocation, BiPlus, BiMinus, BiMapAlt } from 'react-icons/bi';
 import { useDispatch } from 'react-redux';
 import {
@@ -59,7 +58,6 @@ const ZoomButtonWrapper = styled.div`
 `;
 
 const SubButtonWrapper = styled.div`
-  visibility: ${props => props.visibility || 'hidden'};
   position: absolute;
   right: 3rem;
   top: 11.35rem;
@@ -74,14 +72,11 @@ const SubButtonWrapper = styled.div`
   box-shadow: var(--shadow-md);
 `;
 
-// const MapControl = ({ mapControls }) => {
 const MapControl = () => {
   const dispatch = useDispatch();
-  const [visibility, setVisibility] = useState('hidden');
-  const handleVisibleClick = () => {
-    _.isEqual(visibility, 'hidden')
-      ? setVisibility('visible')
-      : setVisibility('hidden');
+  const [isVisible, setVisible] = useState(false);
+  const toggle = () => {
+    setVisible(!isVisible);
   };
 
   return (
@@ -110,36 +105,33 @@ const MapControl = () => {
             <BiMinus />
           </Button>
         </ZoomButtonWrapper>
-        <Button
-          key="mapLayers"
-          title="지도"
-          onClick={() => handleVisibleClick()}
-        >
+        <Button key="mapLayers" title="지도" onClick={toggle}>
           <BiMapAlt />
-          <SubButtonWrapper visibility={visibility}>
-            <Button
-              key="mapBaseHybrid"
-              onClick=""
-              title="스카이뷰"
-              onClickCapture={() => dispatch(toggleOverlayMapType('HYBRID'))}
-            >
-              위성
-            </Button>
-            <Button
-              key="mapBaseUseDistrict"
-              onClick={() => dispatch(toggleOverlayMapType('DISTRICT'))}
-              title="지적편집도"
-            >
-              지적
-            </Button>
-            <Button
-              key="mapBaseTerrain"
-              onClick={() => dispatch(toggleOverlayMapType('TERRIN'))}
-              title="지형도"
-            >
-              지형
-            </Button>
-          </SubButtonWrapper>
+          {isVisible && (
+            <SubButtonWrapper>
+              <Button
+                key="mapBaseHybrid"
+                title="스카이뷰"
+                onClick={() => dispatch(toggleOverlayMapType('HYBRID'))}
+              >
+                위성
+              </Button>
+              <Button
+                key="mapBaseUseDistrict"
+                onClick={() => dispatch(toggleOverlayMapType('DISTRICT'))}
+                title="지적편집도"
+              >
+                지적
+              </Button>
+              <Button
+                key="mapBaseTerrain"
+                onClick={() => dispatch(toggleOverlayMapType('TERRAIN'))}
+                title="지형도"
+              >
+                지형
+              </Button>
+            </SubButtonWrapper>
+          )}
         </Button>
       </ButtonWrapper>
     </MapControlWrapper>
