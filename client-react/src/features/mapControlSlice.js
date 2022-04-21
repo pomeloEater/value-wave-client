@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { isEqual } from 'lodash-es';
 const { kakao } = window;
+import chicken from '../apis/chicken.json';
 
 const mapTypeIds = {
   TERRAIN: kakao.maps.MapTypeId.TERRAIN,
@@ -72,7 +73,13 @@ export const mapSlice = createSlice({
         level: state.zoomLevel,
       };
       const kakaomap = new kakao.maps.Map(container, options);
+      const clusterer = new kakao.maps.MarkerClusterer({
+        map: kakaomap,
+        averageCenter: true,
+        minLevel: 5,
+      });
       state.map = kakaomap;
+      state.clusterer = clusterer;
     },
     /**
      * 지도 확대/축소
@@ -103,6 +110,24 @@ export const mapSlice = createSlice({
       }
       state.overlay[action.payload] = !state.overlay[action.payload];
     },
+    /**
+     * 마커 클러스터러 사용하기(임시)
+     * @param {*} state
+     */
+    setChickenMarkers: state => {
+      const arr = chicken.positions;
+      console.log(arr);
+      const arrMarkers = arr.map(item => {
+        return new kakao.maps.CustomOverlay({
+          position: new kakao.maps.LatLng(item.lat, item.lng),
+          map: state.map,
+          content: '<div class="myLocation"></div>',
+        });
+      });
+      console.log(arrMarkers);
+      state.markers = arrMarkers;
+      state.clusterer.addMarkers(arrMarkers);
+    },
   },
   extraReducers: builder => {
     builder.addCase(getCurrentPosition.fulfilled, (state, action) => {
@@ -118,8 +143,13 @@ export const mapSlice = createSlice({
   },
 });
 
-export const { initMap, zoomIn, zoomOut, toggleOverlayMapType } =
-  mapSlice.actions;
+export const {
+  initMap,
+  zoomIn,
+  zoomOut,
+  toggleOverlayMapType,
+  setChickenMarkers,
+} = mapSlice.actions;
 
 export { getCurrentPosition as setCurrentPosition };
 

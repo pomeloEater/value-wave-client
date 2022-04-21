@@ -13,6 +13,7 @@ import {
   zoomOut,
   setCurrentPosition,
   toggleOverlayMapType,
+  setChickenMarkers,
 } from '../../features/mapControlSlice';
 
 const MapControlWrapper = styled.nav`
@@ -132,6 +133,9 @@ const MapControl = () => {
               </Button>
             </SubButtonWrapper>
           )}
+        </Button>
+        <Button title="테스트" onClick={() => dispatch(setChickenMarkers())}>
+          T
         </Button>
       </ButtonWrapper>
     </MapControlWrapper>
