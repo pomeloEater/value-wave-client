@@ -24,3 +24,12 @@ yarn-error.log*
 
 # app key
 .env
+
+# yarn berry with zero-installs
+.yarn/*
+!.yarn/cache
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
