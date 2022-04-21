@@ -8,7 +8,6 @@ import React, { useState } from 'react';
 import * as _ from 'lodash-es';
 import styled from 'styled-components';
 import { HiOutlineDocumentSearch, HiOutlineSearch } from 'react-icons/hi';
-const { kakao } = window;
 
 /* components' style */
 const searchIconStyle = {
@@ -18,12 +17,12 @@ const searchIconStyle = {
 };
 const detailSearchIconStyle = { width: '1.8rem', height: '2rem' };
 
-/* components */
+/* elements */
 const SearchWrapper = styled.div`
   display: flex;
   width: 100%;
   background-color: white;
-  border: 1px solid #b9bbbe;
+  border: 1px solid var(--color-gray-400);
   border-radius: 0.5rem;
   justify-content: space-between;
   box-shadow: var(--shadow-md);
@@ -73,9 +72,7 @@ const SearchDetailButton = styled.button`
   width: 3rem;
 `;
 
-/*  */
-
-/* 검색영역 */
+/* components */
 const Search = () => {
   // input value 및 change event
   const [value, setValue] = useState('');
@@ -84,40 +81,12 @@ const Search = () => {
   };
   const handleInputKeyUp = e => {
     if (_.isEqual(e.key, 'Enter')) {
-      searchFunction(e.target.value);
+      // searchFunction(e.target.value);
     }
   };
   const handleFormSubmit = e => {
     e.preventDefault();
-    searchFunction(e.target.value);
-  };
-
-  const ps = new kakao.maps.services.Places();
-
-  /**
-   * 장소 검색
-   * @param {string} _value
-   */
-  const searchFunction = _value => {
-    if (_.isNull(_value)) {
-      // TODO: alert창 만들기
-      alert('내용을 입력하여 주십시오.');
-    }
-    console.log(_value);
-    ps.keywordSearch(_value, searchCallback);
-  };
-  const searchCallback = (_data, _status, _pagination) => {
-    if (_.isEqual(_status, kakao.maps.services.Status.OK)) {
-      console.log(_data);
-      // displayPlaces(_data);
-      // displayPagination(_pagination);
-    } else if (_.isEqual(_status, kakao.maps.services.Status.ZERO_RESULT)) {
-      alert('검색 결과가 존재하지 않습니다.');
-      return;
-    } else if (_.isEqual(_status, kakao.maps.services.Status.ERROR)) {
-      alert('검색 중 오류가 발생했습니다.');
-      return;
-    }
+    // searchFunction(e.target.value);
   };
 
   return (
