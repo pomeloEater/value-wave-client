@@ -47,15 +47,15 @@ const Button = styled.div`
     height: 2rem;
     display: inline-block;
   }
-  & + & {
-    box-shadow: var(--shadow-none);
-    border-bottom: 1px solid #b9bbeb;
-  }
 `;
 
 const ZoomButtonWrapper = styled.div`
   width: 2.5rem;
   height: 5rem;
+  & + & {
+    box-shadow: var(--shadow-none);
+    border-bottom: 1px solid #b9bbeb;
+  }
 `;
 
 const SubButtonWrapper = styled.div`
@@ -70,7 +70,10 @@ const SubButtonWrapper = styled.div`
   line-height: 2.5rem;
   text-align: center;
   height: 2.5rem;
-  box-shadow: var(--shadow-md);
+
+  & div {
+    box-shadow: var(--shadow-sm);
+  }
 `;
 
 const MapControl = () => {

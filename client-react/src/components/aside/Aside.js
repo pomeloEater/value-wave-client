@@ -32,6 +32,11 @@ const FoldButtonWrapper = styled.div`
   width: 100%;
   height: auto;
   margin-top: 3.75rem;
+  @media ${({ theme }) => theme.device.mobile} {
+    margin-top: 0;
+  }
+  @media ${({ theme }) => theme.device.laptop} {
+  }
 `;
 const FoldButton = styled.span`
   float: right;
