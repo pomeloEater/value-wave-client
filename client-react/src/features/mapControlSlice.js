@@ -1,7 +1,11 @@
+import React from 'react';
+import { renderToString } from 'react-dom/server';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { isEqual } from 'lodash-es';
-const { kakao } = window;
 import chicken from '../apis/chicken.json';
+import Marker from '../components/map/Marker';
+import InfoWindow from '../components/map/InfoWindow';
+const { kakao } = window;
 
 const mapTypeIds = {
   TERRAIN: kakao.maps.MapTypeId.TERRAIN,
@@ -12,7 +16,6 @@ const mapTypeIds = {
 const initialState = {
   map: null,
   clusterer: null,
-  zoomLevel: 4,
   overlay: {
     HYBRID: false,
     TERRAIN: false,
@@ -46,13 +49,56 @@ const getCurrentPosition = createAsyncThunk(
  * @param {kakao.maps.LatLng} locPosition
  */
 const displayMarker = (state, locPosition) => {
-  state.myLocation ? state.myLocation.setMap(null) : '';
+  const map = state.map;
+  if (state.myLocation) {
+    state.myLocation.marker.setMap(null);
+    state.myLocation.infoWindow.setMap(null);
+    state.myLocation = null;
+  }
+
+  const handleMarkerClick = () => {
+    console.log('marker clicked');
+  };
+
+  const handleInfoWindowClick = () => {
+    console.log('info window clicked');
+  };
+
+  const handleMapClick = () => {
+    console.log('map clicked');
+  };
+
+  const infoExample = {
+    item: {
+      type: '상업용건물',
+      price: '3.13억',
+      year: "'22.01",
+    },
+    onClickEvent: handleInfoWindowClick,
+  };
+  const infoWindow = new kakao.maps.CustomOverlay({
+    position: locPosition,
+    map: state.map,
+    content: renderToString(
+      <InfoWindow
+        item={infoExample.item}
+        onClickEvent={infoExample.onClickEvent}
+      />
+    ),
+    zIndex: 10,
+    clickable: true,
+  });
+
   const marker = new kakao.maps.CustomOverlay({
     position: locPosition,
     map: state.map,
-    content: '<div class="myLocation"></div>',
+    content: renderToString(<Marker onClickEvent={handleMarkerClick} />),
+    zIndex: 10,
+    clickable: true,
   });
-  state.myLocation = marker;
+
+  kakao.maps.event.addListener(map, 'click', handleMapClick);
+  state.myLocation = { marker, infoWindow };
 };
 
 /**
@@ -70,28 +116,36 @@ export const mapSlice = createSlice({
       const container = document.getElementById('mapContainer');
       const options = {
         center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
-        level: state.zoomLevel,
+        level: 4,
       };
       const kakaomap = new kakao.maps.Map(container, options);
+      state.map = kakaomap;
+      /* 클러스터러 설정 */
       const clusterer = new kakao.maps.MarkerClusterer({
         map: kakaomap,
         averageCenter: true,
         minLevel: 5,
       });
-      state.map = kakaomap;
       state.clusterer = clusterer;
+    },
+    /**
+     * 이벤트
+     * @param {*} state
+     * @param {*} action
+     */
+    setEvent: (state, action) => {
+      const { type, callback } = action.payload;
+      kakao.maps.event.addListener(state.map, type, callback);
     },
     /**
      * 지도 확대/축소
      * @param {*} state
      */
     zoomIn: state => {
-      state.zoomLevel -= 1;
-      state.map.setLevel(state.zoomLevel);
+      state.map.setLevel(state.map.getLevel() - 1);
     },
     zoomOut: state => {
-      state.zoomLevel += 1;
-      state.map.setLevel(state.zoomLevel);
+      state.map.setLevel(state.map.getLevel() + 1);
     },
     /**
      * 지도 오버레이 설정
@@ -136,7 +190,7 @@ export const mapSlice = createSlice({
         action.payload.lon
       );
       state.zoomLevel = 4;
-      state.map.setLevel(state.zoomLevel);
+      state.map.setLevel(4);
       state.map.setCenter(locPosition);
       displayMarker(state, locPosition);
     });
