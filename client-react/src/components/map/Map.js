@@ -12,6 +12,7 @@ import styled from 'styled-components';
 import MapControl from './MapControl';
 import Marker from './Marker';
 import useKakaoEvent from './../../hooks/useKakaoEvent';
+import InfoWindow from './InfoWindow';
 
 const MapContainer = styled.div`
   width: 100%;
@@ -49,7 +50,17 @@ const Map = ({ id, center, level }) => {
             position={marker}
             clickable={true}
             style={{ background: 'hotpink' }}
-          />
+            onClickEvent={e => {
+              console.log(e, e.target, 'clicked!');
+            }}
+          >
+            <InfoWindow
+              key={index}
+              item={{ type: '상업용건물', price: '2200억', year: `'20 12월` }}
+              position={marker}
+              clickable={true}
+            />
+          </Marker>
         ))}
     </MapContainer>
   );

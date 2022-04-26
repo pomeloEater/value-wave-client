@@ -44,6 +44,9 @@ const Marker = ({
 
   useEffect(() => {
     marker.setMap(map);
+    return () => {
+      marker.setMap(null);
+    };
   }, [map, marker]);
 
   useEffect(() => {
