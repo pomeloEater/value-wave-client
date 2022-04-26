@@ -30,7 +30,7 @@ const ButtonWrapper = styled.div`
   gap: 2rem;
 `;
 
-const Button = styled.div`
+const Button = styled.button`
   width: 2.3rem;
   height: 2.3rem;
   line-height: 2.3rem;
@@ -50,8 +50,6 @@ const Button = styled.div`
 `;
 
 const ZoomButtonWrapper = styled.div`
-  width: 2.5rem;
-  height: 5rem;
   & + & {
     box-shadow: var(--shadow-none);
     border-bottom: 1px solid #b9bbeb;
@@ -61,15 +59,13 @@ const ZoomButtonWrapper = styled.div`
 const SubButtonWrapper = styled.div`
   position: absolute;
   right: 3rem;
-  top: 11.35rem;
+  top: 10.95rem;
   display: flex;
   flex-direction: row;
   justify-content: end;
-  width: 9rem;
   gap: 0.75rem;
   line-height: 2.5rem;
   text-align: center;
-  height: 2.5rem;
 
   & div {
     box-shadow: var(--shadow-sm);

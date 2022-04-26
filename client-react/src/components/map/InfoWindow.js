@@ -1,5 +1,8 @@
 import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
+import { useSelector } from 'react-redux';
 import styled from 'styled-components';
+const { kakao } = window;
 
 const WindowWrapper = styled.div`
   position: absolute;
@@ -48,14 +51,51 @@ const ItemYear = styled.span`
   color: var(--color-gray-200);
 `;
 
-const InfoWindow = ({ item, onClickEvent }) => {
-  return (
-    <WindowWrapper onClick={onClickEvent}>
-      <ItemType>{item.type}</ItemType>
-      <ItemValue>{item.price}</ItemValue>
-      <ItemYear>{item.year}</ItemYear>
-    </WindowWrapper>
-  );
+const InfoWindow = ({
+  style,
+  position,
+  xAnchor,
+  yAnchor,
+  zIndex,
+  clickable,
+  onCreate,
+  onClickEvent,
+  item,
+  children,
+}) => {
+  const { map } = useSelector(state => state.mapControl);
+  const kakaoPosition = getKakaoLatLng(position);
+  const overlay = new kakao.maps.CustomOverlay({
+    position: kakaoPosition,
+    map,
+    xAnchor,
+    yAnchor,
+    zIndex,
+    clickable,
+    onCreate,
+    content: renderToStaticMarkup(
+      <>
+        <WindowWrapper onClick={onClickEvent}>
+          <ItemType>{item.type}</ItemType>
+          <ItemValue>{item.price}</ItemValue>
+          <ItemYear>{item.year}</ItemYear>
+        </WindowWrapper>
+        {children}
+      </>
+    ),
+  });
+
+  useEffect(() => {
+    overlay.setMap(map);
+  }, [map, marker]);
+
+  useEffect(() => {
+    if (onCreate) onCreate(overlay);
+  }, [map, marker]);
+
+  useKakaoEvent(overlay, 'mouseover', () => {
+    // console.log('mouseover');
+  });
 };
 
 export default InfoWindow;

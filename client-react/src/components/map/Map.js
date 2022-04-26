@@ -6,32 +6,43 @@
  */
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { initMap } from '../../features/mapControlSlice';
-import * as _ from 'lodash-es';
+import { initMap, setAddressFromCenter } from '../../features/mapControlSlice';
+import { isNull } from 'lodash-es';
 import styled from 'styled-components';
-
-const MapWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-`;
+import MapControl from './MapControl';
+import Marker from './Marker';
+import useKakaoEvent from './../../hooks/useKakaoEvent';
 
 const MapContainer = styled.div`
   width: 100%;
   height: 100%;
 `;
 
-const Map = () => {
-  const { map } = useSelector(state => state.mapControl);
+const Map = ({ id, center, level }) => {
+  const { map, myLocation } = useSelector(state => state.mapControl);
   const dispatch = useDispatch();
 
+  /* 지도 초기화 */
   useEffect(() => {
-    if (_.isNull(map)) dispatch(initMap());
-  }, [dispatch, map]);
+    if (isNull(map)) dispatch(initMap({ id, center, level }));
+  }, []);
+
+  /* 중심좌표 -> 법정동 정보  */
+  useKakaoEvent(map, 'tilesloaded', () => {
+    dispatch(setAddressFromCenter(map.getCenter()));
+  });
 
   return (
-    <MapWrapper>
-      <MapContainer id="mapContainer" />
-    </MapWrapper>
+    <MapContainer id={id} center={center} level={level}>
+      <MapControl />
+      {myLocation && (
+        <Marker
+          style={{ background: 'white' }}
+          position={myLocation}
+          clickable={true}
+        />
+      )}
+    </MapContainer>
   );
 };
 
