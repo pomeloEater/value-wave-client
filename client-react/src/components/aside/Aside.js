@@ -7,6 +7,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { MdOutlineKeyboardArrowUp } from 'react-icons/md';
+import { useSelector } from 'react-redux';
 
 /* 범례 */
 const AsideWrapper = styled.aside`
@@ -66,6 +67,7 @@ const LocationWrapper = styled.div`
 `;
 
 const Aside = () => {
+  const { centerAddress } = useSelector(state => state.mapControl);
   return (
     <AsideWrapper>
       <FoldButtonWrapper>
@@ -75,7 +77,7 @@ const Aside = () => {
         </FoldButton>
       </FoldButtonWrapper>
       <LocationWrapper>
-        <h1>TEST</h1>
+        <h1>{centerAddress}</h1>
       </LocationWrapper>
     </AsideWrapper>
   );

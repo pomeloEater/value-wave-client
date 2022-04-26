@@ -1,10 +1,6 @@
-import React from 'react';
-import { renderToString } from 'react-dom/server';
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { isEqual } from 'lodash-es';
+import { isEqual, find } from 'lodash-es';
 import chicken from '../apis/chicken.json';
-import Marker from '../components/map/Marker';
-import InfoWindow from '../components/map/InfoWindow';
 const { kakao } = window;
 
 const mapTypeIds = {
@@ -23,7 +19,11 @@ const initialState = {
   },
   myLocation: null,
   markers: [],
+  centerAddress: '',
 };
+
+/** 주소-좌표간 변환 서비스 객체 */
+const geocoder = new kakao.maps.services.Geocoder();
 
 /**
  * 현재 GPS 위치 가져오기
@@ -36,70 +36,36 @@ const getCurrentPosition = createAsyncThunk(
     const pos = await new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject);
     });
+    // console.log(pos.coords);
     return {
-      lat: pos.coords.latitude,
-      lon: pos.coords.longitude,
+      latitude: pos.coords.latitude,
+      longitude: pos.coords.longitude,
     };
   }
 );
 
 /**
- * 지도에 마커를 만든다(임시)
- * @param {*} state
- * @param {kakao.maps.LatLng} locPosition
+ * 현재 중심좌표 행정동, 법정동 이름 가져오기
+ * @returns (string) 동 이름
  */
-const displayMarker = (state, locPosition) => {
-  const map = state.map;
-  if (state.myLocation) {
-    state.myLocation.marker.setMap(null);
-    state.myLocation.infoWindow.setMap(null);
-    state.myLocation = null;
+const getAddressFromCenter = createAsyncThunk(
+  'mapControl/setAddressFromCenter',
+  async kakaoCenter => {
+    const okResult = await new Promise((resolve, reject) => {
+      geocoder.coord2RegionCode(
+        kakaoCenter.getLng(),
+        kakaoCenter.getLat(),
+        (result, status) => {
+          if (status === kakao.maps.services.Status.OK) {
+            resolve(result);
+          }
+        }
+      );
+    });
+    return find(okResult, { region_type: 'H' }).region_3depth_name;
+    // return find(okResult, { region_type: 'H' }).address_name;
   }
-
-  const handleMarkerClick = () => {
-    console.log('marker clicked');
-  };
-
-  const handleInfoWindowClick = () => {
-    console.log('info window clicked');
-  };
-
-  const handleMapClick = () => {
-    console.log('map clicked');
-  };
-
-  const infoExample = {
-    item: {
-      type: '상업용건물',
-      price: '3.13억',
-      year: "'22.01",
-    },
-    onClickEvent: handleInfoWindowClick,
-  };
-  const infoWindow = new kakao.maps.CustomOverlay({
-    position: locPosition,
-    map: state.map,
-    content: renderToString(
-      <InfoWindow
-        item={infoExample.item}
-        onClickEvent={infoExample.onClickEvent}
-      />
-    ),
-    zIndex: 10,
-    clickable: true,
-  });
-
-  const marker = new kakao.maps.CustomOverlay({
-    position: locPosition,
-    map: state.map,
-    content: renderToString(<Marker onClickEvent={handleMarkerClick} />),
-    zIndex: 10,
-    clickable: true,
-  });
-
-  kakao.maps.event.addListener(map, 'click', handleMapClick);
-  state.myLocation = { marker, infoWindow };
-};
+);
 
 /**
  * 지도 컨트롤 slice
@@ -111,12 +77,14 @@ export const mapSlice = createSlice({
     /**
      * 지도 초기화
      * @param {*} state
+     * @param {*} action
      */
-    initMap: state => {
-      const container = document.getElementById('mapContainer');
+    initMap: (state, action) => {
+      const { id, center, level } = action.payload;
+      const container = document.getElementById(id || 'mapContainer');
       const options = {
-        center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
-        level: 4,
+        center: new kakao.maps.LatLng(center.latitude, center.longitude),
+        level,
       };
       const kakaomap = new kakao.maps.Map(container, options);
       state.map = kakaomap;
@@ -127,15 +95,6 @@ export const mapSlice = createSlice({
         minLevel: 5,
       });
       state.clusterer = clusterer;
-    },
-    /**
-     * 이벤트
-     * @param {*} state
-     * @param {*} action
-     */
-    setEvent: (state, action) => {
-      const { type, callback } = action.payload;
-      kakao.maps.event.addListener(state.map, type, callback);
     },
     /**
      * 지도 확대/축소
@@ -169,31 +128,24 @@ export const mapSlice = createSlice({
      * @param {*} state
      */
     setChickenMarkers: state => {
-      const arr = chicken.positions;
-      console.log(arr);
-      const arrMarkers = arr.map(item => {
-        return new kakao.maps.CustomOverlay({
-          position: new kakao.maps.LatLng(item.lat, item.lng),
-          map: state.map,
-          content: '<div class="myLocation"></div>',
-        });
-      });
-      console.log(arrMarkers);
-      state.markers = arrMarkers;
-      state.clusterer.addMarkers(arrMarkers);
+      state.markers = chicken.positions;
     },
   },
   extraReducers: builder => {
-    builder.addCase(getCurrentPosition.fulfilled, (state, action) => {
-      const locPosition = new kakao.maps.LatLng(
-        action.payload.lat,
-        action.payload.lon
-      );
-      state.zoomLevel = 4;
-      state.map.setLevel(4);
-      state.map.setCenter(locPosition);
-      displayMarker(state, locPosition);
-    });
+    builder
+      .addCase(getCurrentPosition.fulfilled, (state, action) => {
+        state.myLocation = action.payload;
+        const locPosition = new kakao.maps.LatLng(
+          action.payload.latitude,
+          action.payload.longitude
+        );
+        state.zoomLevel = 4;
+        state.map.setLevel(4);
+        state.map.setCenter(locPosition);
+      })
+      .addCase(getAddressFromCenter.fulfilled, (state, action) => {
+        state.centerAddress = action.payload;
+      });
   },
 });
 
@@ -205,6 +157,9 @@ export const {
   setChickenMarkers,
 } = mapSlice.actions;
 
-export { getCurrentPosition as setCurrentPosition };
+export {
+  getCurrentPosition as setCurrentPosition,
+  getAddressFromCenter as setAddressFromCenter,
+};
 
 export default mapSlice.reducer;
