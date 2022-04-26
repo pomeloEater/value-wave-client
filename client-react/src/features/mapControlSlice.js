@@ -51,7 +51,7 @@ const getCurrentPosition = createAsyncThunk(
 const getAddressFromCenter = createAsyncThunk(
   'mapControl/setAddressFromCenter',
   async kakaoCenter => {
-    const okResult = await new Promise((resolve, reject) => {
+    const okResult = await new Promise(resolve => {
       geocoder.coord2RegionCode(
         kakaoCenter.getLng(),
         kakaoCenter.getLat(),
