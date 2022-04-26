@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
-import { renderToString } from 'react-dom/server';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getKakaoLatLng } from './../../utils/kakaoUtils';
-import useKakaoEvent from './../../hooks/useKakaoEvent';
+// import useKakaoEvent from './../../hooks/useKakaoEvent';
 const { kakao } = window;
 
 const MarkerWrapper = styled.div`
@@ -25,26 +24,22 @@ const Marker = ({
   zIndex,
   clickable,
   onCreate,
+  onClickEvent,
   children,
 }) => {
   const { map } = useSelector(state => state.mapControl);
+  const container = useRef(null);
   const kakaoPosition = getKakaoLatLng(position);
 
-  // const marker = new kakao.maps.CustomOverlay({
-  //   position: kakaoPosition,
-  //   map,
-  //   clickable,
-  //   xAnchor,
-  //   yAnchor,
-  //   zIndex,
-  //   onCreate,
-  //   content: renderToString(
-  //     <MarkerWrapper style={style}>{children}</MarkerWrapper>
-  //   ),
-  // });
-  const marker = new kakao.maps.Marker({
-    map,
+  const marker = new kakao.maps.CustomOverlay({
     position: kakaoPosition,
+    map,
+    clickable,
+    xAnchor,
+    yAnchor,
+    zIndex,
+    onCreate,
+    content: container.current,
   });
 
   useEffect(() => {
@@ -55,9 +50,11 @@ const Marker = ({
     if (onCreate) onCreate(marker);
   }, [map, marker]);
 
-  useKakaoEvent(marker, 'click', () => {
-    console.log('clicked!');
-  });
+  return (
+    <MarkerWrapper style={style} ref={container} onClick={onClickEvent}>
+      {children}
+    </MarkerWrapper>
+  );
 };
 
 export default Marker;

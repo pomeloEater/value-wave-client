@@ -19,7 +19,7 @@ const MapContainer = styled.div`
 `;
 
 const Map = ({ id, center, level }) => {
-  const { map, myLocation } = useSelector(state => state.mapControl);
+  const { map, myLocation, markers } = useSelector(state => state.mapControl);
   const dispatch = useDispatch();
 
   /* 지도 초기화 */
@@ -42,6 +42,15 @@ const Map = ({ id, center, level }) => {
           clickable={true}
         />
       )}
+      {markers &&
+        markers.map((marker, index) => (
+          <Marker
+            key={index}
+            position={marker}
+            clickable={true}
+            style={{ background: 'hotpink' }}
+          />
+        ))}
     </MapContainer>
   );
 };
