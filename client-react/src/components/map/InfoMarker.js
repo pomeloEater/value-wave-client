@@ -1,23 +1,30 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { getKakaoLatLng } from '../../utils/kakaoUtils';
-import useKakaoEvent from '../../hooks/useKakaoEvent';
+import { getKakaoLatLng } from './../../utils/kakaoUtils';
 const { kakao } = window;
+
+const MarkerWrapper = styled.div`
+  width: 0.5rem;
+  height: 0.5rem;
+  /* width: 1rem;
+  height: 1rem; */
+  border-radius: 50%;
+  background-color: black;
+  border: 1px solid black;
+  cursor: pointer;
+`;
 
 const WindowWrapper = styled.div`
   position: absolute;
   white-space: nowrap;
-  display: block;
-  bottom: 1rem;
-  background-color: slateblue;
+  bottom: 1.3rem;
   width: 4rem;
   height: auto;
   text-align: center;
   background-color: white;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--color-gray-400);
   box-shadow: var(--shadow-sm);
   & * {
     margin: 0;
@@ -37,6 +44,7 @@ const WindowWrapper = styled.div`
     position: absolute;
   }
 `;
+
 const ItemType = styled.span`
   width: 100%;
   color: var(--color-gray-600);
@@ -52,7 +60,8 @@ const ItemYear = styled.span`
   color: var(--color-gray-200);
 `;
 
-const InfoWindow = ({
+const InfoMarker = ({
+  item,
   style,
   position,
   xAnchor,
@@ -60,19 +69,21 @@ const InfoWindow = ({
   zIndex,
   clickable,
   onCreate,
-  onClickEvent,
-  item,
+  onMarkerClick,
+  onInfoClick,
 }) => {
   const { map } = useSelector(state => state.mapControl);
-  const container = useRef(null);
   const kakaoPosition = getKakaoLatLng(position);
+  const container = useRef(null);
+  const [visible, setVisible] = useState(true);
+
   const overlay = new kakao.maps.CustomOverlay({
     position: kakaoPosition,
     map,
+    clickable,
     xAnchor,
     yAnchor,
     zIndex,
-    clickable,
     onCreate,
     content: container.current,
   });
@@ -86,19 +97,30 @@ const InfoWindow = ({
 
   useEffect(() => {
     if (onCreate) onCreate(overlay);
-  }, [map, onCreate]);
-
-  useKakaoEvent(overlay, 'mouseover', () => {
-    console.log('overlay mouseover!');
-  });
+  }, [map, overlay]);
 
   return (
-    <WindowWrapper style={style} ref={container} onClick={onClickEvent}>
-      <ItemType>{item.type}</ItemType>
-      <ItemValue>{item.price}</ItemValue>
-      <ItemYear>{item.year}</ItemYear>
-    </WindowWrapper>
+    <MarkerWrapper
+      style={style}
+      ref={container}
+      onClick={onMarkerClick}
+      onClickCapture={() => setVisible(!visible)}
+    >
+      {visible && (
+        <WindowWrapper
+          style={style}
+          onClick={onInfoClick}
+          onClickCapture={() => setVisible(!visible)}
+          onMouseOver={() => overlay.setZIndex(10)}
+          onMouseLeave={() => overlay.setZIndex(0)}
+        >
+          <ItemType>{item.type}</ItemType>
+          <ItemValue>{item.price}</ItemValue>
+          <ItemYear>{item.year}</ItemYear>
+        </WindowWrapper>
+      )}
+    </MarkerWrapper>
   );
 };
 
-export default InfoWindow;
+export default InfoMarker;
