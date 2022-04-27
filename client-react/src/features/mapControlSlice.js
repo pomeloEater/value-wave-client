@@ -18,7 +18,7 @@ const initialState = {
     DISTRICT: false,
   },
   myLocation: null,
-  markers: [],
+  markerPositions: [],
   centerAddress: '',
 };
 
@@ -36,7 +36,6 @@ const getCurrentPosition = createAsyncThunk(
     const pos = await new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject);
     });
-    // console.log(pos.coords);
     return {
       latitude: pos.coords.latitude,
       longitude: pos.coords.longitude,
@@ -128,20 +127,13 @@ export const mapSlice = createSlice({
      * @param {*} state
      */
     setChickenMarkers: state => {
-      state.markers = chicken.positions;
+      state.markerPositions = chicken.positions;
     },
   },
   extraReducers: builder => {
     builder
       .addCase(getCurrentPosition.fulfilled, (state, action) => {
         state.myLocation = action.payload;
-        const locPosition = new kakao.maps.LatLng(
-          action.payload.latitude,
-          action.payload.longitude
-        );
-        state.zoomLevel = 4;
-        state.map.setLevel(4);
-        state.map.setCenter(locPosition);
       })
       .addCase(getAddressFromCenter.fulfilled, (state, action) => {
         state.centerAddress = action.payload;
