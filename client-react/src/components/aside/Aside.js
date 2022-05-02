@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-import { MdOutlineKeyboardArrowUp } from 'react-icons/md';
+// import { MdOutlineKeyboardArrowUp } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 
 /* 범례 */
@@ -29,7 +29,7 @@ const AsideWrapper = styled.aside`
   @media ${({ theme }) => theme.device.laptop} {
   }
 `;
-const FoldButtonWrapper = styled.div`
+const LocationWrapper = styled.div`
   width: 100%;
   height: auto;
   margin-top: 3.75rem;
@@ -39,43 +39,11 @@ const FoldButtonWrapper = styled.div`
   @media ${({ theme }) => theme.device.laptop} {
   }
 `;
-const FoldButton = styled.span`
-  float: right;
-  border-radius: 1rem;
-  border: 1px solid var(--color-gray-400);
-  color: var(--color-gray-500);
-  padding: 0.1rem 0.25rem;
-  width: 3.5rem;
-  box-shadow: var(--shadow-sm);
-  font-size: 0.8rem;
-  display: flex;
-  justify-content: center;
-  & svg {
-    display: inline-block;
-    font-size: 1rem;
-  }
-`;
-const LocationWrapper = styled.div`
-  width: 100%;
-  height: auto;
-
-  @media ${({ theme }) => theme.device.mobile} {
-    margin: 0;
-  }
-  @media ${({ theme }) => theme.device.laptop} {
-  }
-`;
 
 const Aside = () => {
   const { centerAddress } = useSelector(state => state.mapControl);
   return (
     <AsideWrapper>
-      <FoldButtonWrapper>
-        <FoldButton>
-          <MdOutlineKeyboardArrowUp />
-          접기
-        </FoldButton>
-      </FoldButtonWrapper>
       <LocationWrapper>
         <h1>{centerAddress}</h1>
       </LocationWrapper>
