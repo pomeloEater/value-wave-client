@@ -1,6 +1,8 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { isEqual, find } from 'lodash-es';
 import chicken from '../apis/chicken.json';
+import ctprvn from '../apis/polygon_ctprvn.json';
+import { getKakaoLatLng } from '../utils/kakaoUtils';
 const { kakao } = window;
 
 const mapTypeIds = {
@@ -11,7 +13,6 @@ const mapTypeIds = {
 
 const initialState = {
   map: null,
-  clusterer: null,
   overlay: {
     HYBRID: false,
     TERRAIN: false,
@@ -20,6 +21,7 @@ const initialState = {
   myLocation: null,
   markerPositions: [],
   centerAddress: '',
+  layerPaths: null,
 };
 
 /** 주소-좌표간 변환 서비스 객체 */
@@ -50,7 +52,7 @@ const getCurrentPosition = createAsyncThunk(
 const getAddressFromCenter = createAsyncThunk(
   'mapControl/setAddressFromCenter',
   async kakaoCenter => {
-    const okResult = await new Promise(resolve => {
+    const response = await new Promise(resolve => {
       geocoder.coord2RegionCode(
         kakaoCenter.getLng(),
         kakaoCenter.getLat(),
@@ -61,8 +63,24 @@ const getAddressFromCenter = createAsyncThunk(
         }
       );
     });
-    return find(okResult, { region_type: 'H' }).region_3depth_name;
-    // return find(okResult, { region_type: 'H' }).address_name;
+    return find(response, { region_type: 'H' }).region_3depth_name;
+    // return find(response, { region_type: 'H' }).address_name;
+  }
+);
+
+/**
+ * 지도 확대수준 geoJSON array 가져오기
+ * @returns (array) geoJSON{type, properties, geometry}
+ */
+const getLevelDivision = createAsyncThunk(
+  'mapControl/setLevelDivision',
+  async zoomLevel => {
+    let url = null;
+    switch (zoomLevel) {
+      default:
+        url = ctprvn;
+    }
+    return url.features;
   }
 );
 
@@ -82,18 +100,12 @@ export const mapSlice = createSlice({
       const { id, center, level } = action.payload;
       const container = document.getElementById(id || 'mapContainer');
       const options = {
-        center: new kakao.maps.LatLng(center.latitude, center.longitude),
+        center: getKakaoLatLng(center),
         level,
       };
       const kakaomap = new kakao.maps.Map(container, options);
+      kakaomap.setMaxLevel(12);
       state.map = kakaomap;
-      /* 클러스터러 설정 */
-      const clusterer = new kakao.maps.MarkerClusterer({
-        map: kakaomap,
-        averageCenter: true,
-        minLevel: 5,
-      });
-      state.clusterer = clusterer;
     },
     /**
      * 지도 확대/축소
@@ -123,7 +135,7 @@ export const mapSlice = createSlice({
       state.overlay[action.payload] = !state.overlay[action.payload];
     },
     /**
-     * 마커 클러스터러 사용하기(임시)
+     * 마커 사용하기(임시)
      * @param {*} state
      */
     setChickenMarkers: state => {
@@ -137,6 +149,9 @@ export const mapSlice = createSlice({
       })
       .addCase(getAddressFromCenter.fulfilled, (state, action) => {
         state.centerAddress = action.payload;
+      })
+      .addCase(getLevelDivision.fulfilled, (state, action) => {
+        state.layerPaths = action.payload;
       });
   },
 });
@@ -152,6 +167,7 @@ export const {
 export {
   getCurrentPosition as setCurrentPosition,
   getAddressFromCenter as setAddressFromCenter,
+  getLevelDivision as setLevelDivision,
 };
 
 export default mapSlice.reducer;
