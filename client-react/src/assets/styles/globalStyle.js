@@ -26,6 +26,29 @@ const GlobalStyle = createGlobalStyle`
     --shaodw-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
     --shadow-none: box-shadow: 0 0 #0000;
   }
+  
+  html, body {
+    font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo', 'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  }
+
+  body {
+    min-width: 320px;
+    height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    color: rgb(31 41 55)
+  }
+
+  h1 {
+    
+  }
 `;
 
 export default GlobalStyle;

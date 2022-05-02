@@ -22,7 +22,7 @@ const WindowWrapper = styled.div`
   width: 4rem;
   height: auto;
   text-align: center;
-  background-color: white;
+  background-color: white !important;
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-sm);
@@ -111,8 +111,8 @@ const InfoMarker = ({
           style={style}
           onClick={onInfoClick}
           onClickCapture={() => setVisible(!visible)}
-          onMouseOver={() => overlay.setZIndex(10)}
-          onMouseLeave={() => overlay.setZIndex(0)}
+          onMouseOver={() => overlay.setZIndex(20)}
+          onMouseLeave={() => overlay.setZIndex(10)}
         >
           <ItemType>{item.type}</ItemType>
           <ItemValue>{item.price}</ItemValue>
