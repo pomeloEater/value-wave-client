@@ -2,17 +2,27 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { isEqual, find } from 'lodash-es';
 import chicken from '../apis/chicken.json';
 import ctprvn from '../apis/polygon_ctprvn.json';
+import sig from '../apis/polygon_sig.json';
+// import emd from '../apis/polygon_emd.json';
 import { getKakaoLatLng } from '../utils/kakaoUtils';
 const { kakao } = window;
 
+/** 주소-좌표간 변환 서비스 객체 */
+const geocoder = new kakao.maps.services.Geocoder();
+
+/** 지도 타입 */
 const mapTypeIds = {
   TERRAIN: kakao.maps.MapTypeId.TERRAIN,
   DISTRICT: kakao.maps.MapTypeId.USE_DISTRICT,
   ROADVIEW: kakao.maps.MapTypeId.ROADVIEW,
 };
 
+// polygonFeatures(확대수준 변경) 감지용
+const emptyArray = [];
+
+/** 초기값 */
 const initialState = {
-  map: null,
+  map: null, // serializableCheck: false (store.js) TODO 개선방법은?
   overlay: {
     HYBRID: false,
     TERRAIN: false,
@@ -20,12 +30,9 @@ const initialState = {
   },
   myLocation: null,
   markerPositions: [],
+  polygonFeatures: [],
   centerAddress: '',
-  layerPaths: null,
 };
-
-/** 주소-좌표간 변환 서비스 객체 */
-const geocoder = new kakao.maps.services.Geocoder();
 
 /**
  * 현재 GPS 위치 가져오기
@@ -75,12 +82,20 @@ const getAddressFromCenter = createAsyncThunk(
 const getLevelDivision = createAsyncThunk(
   'mapControl/setLevelDivision',
   async zoomLevel => {
-    let url = null;
-    switch (zoomLevel) {
-      default:
-        url = ctprvn;
+    console.log('zoomlevel', zoomLevel);
+    let data = null;
+    if (zoomLevel > 10) {
+      data = ctprvn;
+    } else if (zoomLevel > 8) {
+      data = sig;
+      /** TODO 읍면동 행정구역 표현하기 -> bounds 연산 필요?
+       * Reached hep limit Allocation failed
+       * - JavaScript heap out of memory
+       */
+      // } else if (zoomLevel > 6) {
+      // data = emd;
     }
-    return url.features;
+    return data?.features;
   }
 );
 
@@ -151,7 +166,7 @@ export const mapSlice = createSlice({
         state.centerAddress = action.payload;
       })
       .addCase(getLevelDivision.fulfilled, (state, action) => {
-        state.layerPaths = action.payload;
+        state.polygonFeatures = action.payload || emptyArray;
       });
   },
 });

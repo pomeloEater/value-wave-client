@@ -17,14 +17,17 @@ import MapControl from './MapControl';
 import Marker from './Marker';
 import InfoMarker from './InfoMarker';
 import useKakaoEvent from './../../hooks/useKakaoEvent';
-// import { getPolygonPath } from '../../utils/kakaoUtils';
+import { getPolygonFeature, setKakaoEvent } from 'utils/kakaoUtils';
+// import { getPolygonFeature } from '../../utils/kakaoUtils';
 const { kakao } = window;
 
+/** ELEMENTS **/
 const MapContainer = styled.div`
   width: 100%;
   height: 100%;
 `;
 
+/** FUNCTIONS **/
 const getMapMarker = (key, position, style, onClickEvent) => (
   <Marker
     key={key}
@@ -54,14 +57,83 @@ const getInfoMarker = (
   />
 );
 
+// 폴리곤 삭제 후 callback
+const clearPolygons = (_polygons, _setPolygons, _callback) => {
+  _polygons.forEach(_polygon => {
+    _polygon.setMap(null);
+  });
+  _setPolygons([]);
+  _callback.call(this);
+};
+
+// 폴리곤 중심좌표 구하기 (centroid algorithm)
+const getCenterCoords = coordinates => {
+  let area = 0,
+    cx = 0,
+    cy = 0;
+  for (let i = 0; i < coordinates.length; i++) {
+    let j = (i + 1) % coordinates.length;
+    let pt1 = coordinates[i],
+      pt2 = coordinates[j];
+
+    let x1 = pt1[0],
+      x2 = pt2[0],
+      y1 = pt1[1],
+      y2 = pt2[1];
+
+    area += x1 * y2;
+    area -= y1 * x2;
+
+    cx += (x1 + x2) * (x1 * y2 - x2 * y1);
+    cy += (y1 + y2) * (x1 * y2 - x2 * y1);
+  }
+  area /= 2;
+  area = Math.abs(area);
+
+  cx = cx / (6.0 * area);
+  cy = cy / (6.0 * area);
+
+  return [Math.abs(cx), Math.abs(cy)];
+};
+
+// 폴리곤 생성
+const getPolygon = (map, feature) => {
+  const { properties, path, coordinates } = getPolygonFeature(feature);
+  console.log(properties, path);
+  const polygon = new kakao.maps.Polygon({
+    map,
+    path,
+    strokeWeight: 2,
+    strokeColor: '#004c80',
+    strokeOpacity: 0.8,
+    fillColor: '#fff',
+    fillOpacity: 0.7,
+  });
+  setKakaoEvent(polygon, 'mouseover', () => {
+    polygon.setOptions({ fillColor: '#09f' });
+  });
+  setKakaoEvent(polygon, 'mouseout', () => {
+    polygon.setOptions({ fillColor: '#fff' });
+  });
+  setKakaoEvent(polygon, 'click', () => {
+    const level = map.getLevel() - 2;
+    const anchorCoords = getCenterCoords(coordinates);
+    map.setLevel(level, {
+      anchor: new kakao.maps.LatLng(anchorCoords[1], anchorCoords[0]),
+    });
+  });
+  return polygon;
+};
+
+/** COMPONENTS **/
 const Map = ({ id, center, level }) => {
-  const { map, myLocation, markerPositions, layerPaths } = useSelector(
+  const dispatch = useDispatch();
+  const { map, myLocation, markerPositions, polygonFeatures } = useSelector(
     state => state.mapControl
   );
   const [myLocationMarker, setMyLocationMarker] = useState(null);
   const [mapMarkers, setMapMarkers] = useState([]);
-  const [layerPolygons /* setLayerPolygons */] = useState([]);
-  const dispatch = useDispatch();
+  const [layerPolygons, setLayerPolygons] = useState([]);
 
   /* 지도 초기화 */
   useEffect(() => {
@@ -70,78 +142,26 @@ const Map = ({ id, center, level }) => {
 
   /* 중심좌표 -> 법정동 정보  */
   useKakaoEvent(map, 'tilesloaded', () => {
-    // dispatch(setAddressFromCenter(map.getCenter()));
-    // fetch(dispatch(setAddressFromCenter(map.getCenter()))).then(() => {
-    //   dispatch(setLevelDivision(map.getLevel()));
-    // });
-
-    /* test draw polygon */
-    var outer = [
-      new kakao.maps.LatLng(33.45086654081833, 126.56906858718982),
-      new kakao.maps.LatLng(33.45010890948828, 126.56898629127468),
-      new kakao.maps.LatLng(33.44979857909499, 126.57049357211622),
-      new kakao.maps.LatLng(33.450137483918496, 126.57202991943016),
-      new kakao.maps.LatLng(33.450706188506054, 126.57223147947938),
-      new kakao.maps.LatLng(33.45164068091554, 126.5713126693152),
-    ];
-
-    var hole = [
-      new kakao.maps.LatLng(33.4506262491095, 126.56997323165163),
-      new kakao.maps.LatLng(33.45029422800042, 126.57042659659218),
-      new kakao.maps.LatLng(33.45032339792896, 126.5710395101452),
-      new kakao.maps.LatLng(33.450622037218295, 126.57136070280123),
-      new kakao.maps.LatLng(33.450964416902046, 126.57129448564594),
-      new kakao.maps.LatLng(33.4510527150534, 126.57075627706975),
-    ];
-    let path = [outer, hole];
-    // 다각형을 생성하고 지도에 표시합니다
-    var polygon = new kakao.maps.Polygon({
-      // map,
-      path, // 좌표 배열의 배열로 하나의 다각형을 표시할 수 있습니다
-      strokeWeight: 2,
-      strokeColor: '#b26bb2',
-      strokeOpacity: 0.8,
-      fillColor: '#f9f',
-      fillOpacity: 0.7,
-      zIndex: 30,
+    fetch(dispatch(setAddressFromCenter(map.getCenter()))).then(() => {
+      dispatch(setLevelDivision(map.getLevel()));
     });
-    console.log(polygon);
-    polygon.setMap(map);
   });
 
   /* 확대레벨 -> 폴리곤 레이어 */
   useEffect(() => {
-    // var outer = [
-    //   new kakao.maps.LatLng(33.45086654081833, 126.56906858718982),
-    //   new kakao.maps.LatLng(33.45010890948828, 126.56898629127468),
-    //   new kakao.maps.LatLng(33.44979857909499, 126.57049357211622),
-    //   new kakao.maps.LatLng(33.450137483918496, 126.57202991943016),
-    //   new kakao.maps.LatLng(33.450706188506054, 126.57223147947938),
-    //   new kakao.maps.LatLng(33.45164068091554, 126.5713126693152),
-    // ];
-    // var hole = [
-    //   new kakao.maps.LatLng(33.4506262491095, 126.56997323165163),
-    //   new kakao.maps.LatLng(33.45029422800042, 126.57042659659218),
-    //   new kakao.maps.LatLng(33.45032339792896, 126.5710395101452),
-    //   new kakao.maps.LatLng(33.450622037218295, 126.57136070280123),
-    //   new kakao.maps.LatLng(33.450964416902046, 126.57129448564594),
-    //   new kakao.maps.LatLng(33.4510527150534, 126.57075627706975),
-    // ];
-    // let path = [outer, hole];
-    // // 다각형을 생성하고 지도에 표시합니다
-    // var polygon = new kakao.maps.Polygon({
-    //   map,
-    //   path, // 좌표 배열의 배열로 하나의 다각형을 표시할 수 있습니다
-    //   strokeWeight: 2,
-    //   strokeColor: '#b26bb2',
-    //   strokeOpacity: 0.8,
-    //   fillColor: '#f9f',
-    //   fillOpacity: 0.7,
-    //   zIndex: 30,
-    // });
-    // console.log(polygon);
-    // polygon.setMap(map);
-  }, [layerPaths]);
+    // 기존 폴리곤 삭제
+    if (isNull(layerPolygons)) return;
+    clearPolygons(layerPolygons, setLayerPolygons, () => {
+      if (polygonFeatures.length === 0) return;
+      // 신규 폴리곤 추가
+      const newPolygons = [];
+      polygonFeatures.forEach(feature => {
+        let polygon = getPolygon(map, feature);
+        newPolygons.push(polygon);
+      });
+      setLayerPolygons(newPolygons);
+    });
+  }, [polygonFeatures]);
 
   /* 내위치 추가 */
   useEffect(() => {
@@ -155,7 +175,7 @@ const Map = ({ id, center, level }) => {
     map.setCenter(locPosition);
   }, [myLocation]);
 
-  /* 마커 정보 추가 */
+  /* 마커 정보 추가 (임시) */
   useEffect(() => {
     if (isNull(markerPositions)) return;
     if (mapMarkers?.length > 0) {
