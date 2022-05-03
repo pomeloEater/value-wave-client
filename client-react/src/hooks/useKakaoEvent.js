@@ -6,7 +6,7 @@ const useKakaoEvent = (target, type, callback) => {
   useEffect(() => {
     if (isNull(target) || isNull(type) || isNull(callback)) return;
     const callbackWrapper = (...args) => {
-      return callback(target, ...args);
+      return callback(...args);
     };
 
     kakao.maps.event.addListener(target, type, callbackWrapper);
