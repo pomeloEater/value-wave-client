@@ -147,6 +147,17 @@ const Map = ({ id, center, level }) => {
     });
   });
 
+  /* 클릭 시 좌표 표출 */
+  useKakaoEvent(map, 'click', e => {
+    console.log(
+      '%c KAKAO ',
+      'background-color: black;color:yellow;font-weight:bold',
+      e,
+      e.latLng,
+      e.point
+    );
+  });
+
   /* 확대레벨 -> 폴리곤 레이어 */
   useEffect(() => {
     // 기존 폴리곤 삭제
