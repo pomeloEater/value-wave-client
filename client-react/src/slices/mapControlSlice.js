@@ -1,10 +1,10 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { isEqual, find } from 'lodash-es';
-import chicken from '../apis/chicken.json';
-import ctprvn from '../apis/polygon_ctprvn.json';
-import sig from '../apis/polygon_sig.json';
-// import emd from '../apis/polygon_emd.json';
-import { getKakaoLatLng } from '../utils/kakaoUtils';
+import chicken from 'apis/chicken.json';
+import ctprvn from 'apis/polygon_ctprvn.json';
+import sig from 'apis/polygon_sig.json';
+// import emd from 'apis/polygon_emd.json';
+import { getKakaoLatLng } from ' utils/kakaoUtils';
 const { kakao } = window;
 
 /** 주소-좌표간 변환 서비스 객체 */

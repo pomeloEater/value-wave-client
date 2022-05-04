@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import logger from 'redux-logger';
-import mapSlice from '../slices/mapControlSlice';
+import mapSlice from 'slices/mapControlSlice';
 
 const reducer = {
   mapControl: mapSlice,
