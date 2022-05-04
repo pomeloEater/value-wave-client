@@ -14,7 +14,7 @@ import {
   setCurrentPosition,
   toggleOverlayMapType,
   setChickenMarkers,
-} from '../../features/mapControlSlice';
+} from 'slices/mapControlSlice';
 
 const MapControlWrapper = styled.nav`
   position: absolute;

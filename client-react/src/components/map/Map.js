@@ -12,13 +12,11 @@ import {
   initMap,
   setAddressFromCenter,
   setLevelDivision,
-} from '../../features/mapControlSlice';
-import MapControl from './MapControl';
-import Marker from './Marker';
-import InfoMarker from './InfoMarker';
-import useKakaoEvent from './../../hooks/useKakaoEvent';
+} from 'slices/mapControlSlice';
+import { MapControl, Marker, InfoMarker } from 'components/map';
+import useKakaoEvent from 'hooks/useKakaoEvent';
 import { getPolygonFeature, setKakaoEvent } from 'utils/kakaoUtils';
-// import { getPolygonFeature } from '../../utils/kakaoUtils';
+// import { getPolygonFeature } from 'utils/kakaoUtils';
 const { kakao } = window;
 
 /** ELEMENTS **/

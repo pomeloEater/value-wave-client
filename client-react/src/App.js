@@ -1,22 +1,19 @@
 import React from 'react';
-import Aside from './components/aside/Aside';
-import Header from './components/header/Header';
-import Map from './components/map/Map';
+import Aside from 'components/aside/Aside';
+import Header from 'components/header/Header';
+import { Map } from 'components/map';
 
-// const center = {
-//   latitude: 37.365264512305174,
-//   longitude: 127.10676860117488,
-// };
-
+/** 지도 초기 중앙 좌표값 / 확대수준 */
 const center = {
-  latitude: 33.450701,
-  longitude: 126.570667,
+  latitude: 37.365264512305174,
+  longitude: 127.10676860117488,
 };
+const level = 4;
 
 const App = () => {
   return (
     <>
-      <Map id="mapContainer" level={4} center={center} />
+      <Map id="mapContainer" level={level} center={center} />
       <Header />
       <Aside />
     </>
