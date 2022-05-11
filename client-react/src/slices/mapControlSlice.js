@@ -4,7 +4,7 @@ import chicken from 'apis/chicken.json';
 import ctprvn from 'apis/polygon_ctprvn.json';
 import sig from 'apis/polygon_sig.json';
 // import emd from 'apis/polygon_emd.json';
-import { getKakaoLatLng } from ' utils/kakaoUtils';
+import { getKakaoLatLng } from 'utils/kakaoUtils';
 const { kakao } = window;
 
 /** 주소-좌표간 변환 서비스 객체 */
