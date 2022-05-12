@@ -4,7 +4,7 @@
  * date: 2022-04-19
  * description: 메인-좌측 하단 매물 영역(미정)
  */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 // import { MdOutlineKeyboardArrowUp } from 'react-icons/md';
 import { useSelector } from 'react-redux';
@@ -42,10 +42,19 @@ const LocationWrapper = styled.div`
 
 const Aside = () => {
   const { centerAddress } = useSelector(state => state.mapControl);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    fetch('/hello')
+      .then(res => res.text())
+      .then(message => setMessage(message));
+  });
+
   return (
     <AsideWrapper>
       <LocationWrapper>
         <h1>{centerAddress}</h1>
+        <h6>{message}</h6>
       </LocationWrapper>
     </AsideWrapper>
   );
