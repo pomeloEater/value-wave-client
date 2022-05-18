@@ -15,7 +15,6 @@ const AsideWrapper = styled.aside`
   z-index: 30;
   display: flex;
   flex-direction: column;
-  padding: 1.25rem;
   width: 24rem;
   height: 100%;
   background-color: white;
@@ -30,38 +29,35 @@ const AsideWrapper = styled.aside`
   }
 `;
 
-/* components' style */
-const searchIconStyle = {
-  width: '2rem',
-  height: '2rem',
-  color: '#b9bbbe',
-};
-const detailSearchIconStyle = { width: '1.8rem', height: '2rem' };
-
 /* elements */
 const SearchWrapper = styled.div`
   display: flex;
   width: 100%;
   background-color: white;
-  border: 1px solid var(--color-gray-400);
-  border-radius: 0.5rem;
+  border-bottom: 1px solid var(--color-gray-400);
+  padding: 0 0.25rem;
   justify-content: space-between;
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 `;
 const SearchForm = styled.form`
   position: relative;
-  flex: auto;
+  display: flex;
+  flex-grow: 1;
 `;
 const BackButton = styled.button`
   padding: 0.25rem;
-  width: 3rem;
+  & svg {
+    width: 1.8rem;
+    height: 2rem;
+    color: #b9bbbe;
+  }
 `;
 const SearchInput = styled.input`
   width: auto;
-  flex: 1 1 auto;
-  padding: 0.75rem 1.75rem 0.75rem 0.75rem;
+  padding: 0.75rem 0.25rem;
   margin-right: 0px;
   border: 1px transparent;
+  flex-grow: 1;
   &:focus {
     outline: 2px solid transparent;
     outline-offset: 2px;
@@ -69,13 +65,17 @@ const SearchInput = styled.input`
 `;
 const SearchButton = styled.button`
   padding: 0.25rem;
-  position: absolute;
   width: 2.1rem;
   right: 0px;
   top: 0.2rem;
+  & svg {
+    width: 1.8rem;
+    height: 2rem;
+    color: #b9bbbe;
+  }
 `;
 const LineDiv = styled.div`
-  margin-top: 0.5rem;
+  margin: auto 0.25rem;
 `;
 const LineSpan = styled.span`
   width: 1px;
@@ -86,7 +86,10 @@ const LineSpan = styled.span`
 `;
 const SearchDetailButton = styled.button`
   padding: 0.25rem;
-  width: 3rem;
+  & svg {
+    width: 1.8rem;
+    height: 2rem;
+  }
 `;
 
 const SearchAside = () => {
@@ -112,7 +115,7 @@ const SearchAside = () => {
     <AsideWrapper>
       <SearchWrapper>
         <BackButton type="button" title="뒤로가기" onClick={handleClickEvent}>
-          <HiArrowNarrowLeft style={searchIconStyle} />
+          <HiArrowNarrowLeft />
         </BackButton>
         <SearchForm onSubmit={handleFormSubmit}>
           <SearchInput
@@ -123,14 +126,14 @@ const SearchAside = () => {
             value={value}
           />
           <SearchButton type="submit" title="검색">
-            <HiOutlineSearch style={searchIconStyle} />
+            <HiOutlineSearch />
           </SearchButton>
         </SearchForm>
         <LineDiv>
           <LineSpan />
         </LineDiv>
         <SearchDetailButton type="button" title="상세검색">
-          <HiOutlineDocumentSearch style={detailSearchIconStyle} />
+          <HiOutlineDocumentSearch />
         </SearchDetailButton>
       </SearchWrapper>
     </AsideWrapper>

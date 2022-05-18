@@ -10,27 +10,18 @@ import { toggleSearch } from 'slices/viewControlSlice';
 import { HiOutlineDocumentSearch, HiOutlineSearch } from 'react-icons/hi';
 import { useDispatch } from 'react-redux';
 
-/* components' style */
-const searchIconStyle = {
-  width: '2rem',
-  height: '2rem',
-  color: '#b9bbbe',
-};
-const detailSearchIconStyle = { width: '1.8rem', height: '2rem' };
-
 /* elements */
 const SearchWrapper = styled.div`
+  position: relative;
   display: flex;
   width: 100%;
+  height: 3rem;
   background-color: white;
   border: 1px solid var(--color-gray-400);
   border-radius: 0.5rem;
+  padding: 0 0.25rem;
   justify-content: space-between;
   box-shadow: var(--shadow-md);
-`;
-const SearchDiv = styled.div`
-  position: relative;
-  flex: auto;
 `;
 const LogoWrapper = styled.a`
   display: flex;
@@ -42,8 +33,7 @@ const LogoWrapper = styled.a`
 `;
 const SearchInput = styled.input`
   width: auto;
-  flex: 1 1 auto;
-  padding: 0.75rem 1.75rem 0.75rem 0.75rem;
+  padding: 0.25rem;
   margin-right: 0px;
   border: 1px transparent;
   &:focus {
@@ -53,13 +43,15 @@ const SearchInput = styled.input`
 `;
 const SearchButton = styled.button`
   padding: 0.25rem;
-  position: absolute;
   width: 2.1rem;
-  right: 0px;
-  top: 0.2rem;
+  & svg {
+    width: 1.8rem;
+    height: 2rem;
+    color: #b9bbbe;
+  }
 `;
 const LineDiv = styled.div`
-  margin-top: 0.5rem;
+  margin: auto 0.25rem;
 `;
 const LineSpan = styled.span`
   width: 1px;
@@ -70,7 +62,10 @@ const LineSpan = styled.span`
 `;
 const SearchDetailButton = styled.button`
   padding: 0.25rem;
-  width: 3rem;
+  & svg {
+    width: 1.8rem;
+    height: 2rem;
+  }
 `;
 
 /* components */
@@ -83,21 +78,20 @@ const Search = () => {
   return (
     <SearchWrapper>
       <LogoWrapper title="value-wave">로고</LogoWrapper>
-      <SearchDiv>
-        <SearchInput
-          type="text"
-          placeholder="건물명, 지번, 도로명 검색"
-          onClick={handleClickEvent}
-        />
-        <SearchButton type="submit" title="검색">
-          <HiOutlineSearch style={searchIconStyle} />
-        </SearchButton>
-      </SearchDiv>
+      <SearchInput
+        type="text"
+        placeholder="건물명, 지번, 도로명 검색"
+        onClick={handleClickEvent}
+        readOnly="readOnly"
+      />
+      <SearchButton type="submit" title="검색">
+        <HiOutlineSearch />
+      </SearchButton>
       <LineDiv>
         <LineSpan />
       </LineDiv>
       <SearchDetailButton type="button" title="상세검색">
-        <HiOutlineDocumentSearch style={detailSearchIconStyle} />
+        <HiOutlineDocumentSearch />
       </SearchDetailButton>
     </SearchWrapper>
   );

@@ -13,7 +13,7 @@ const HeaderWrapper = styled.header`
   z-index: 20;
   display: flex;
   flex-direction: column;
-  padding: 1.25rem;
+  padding: 1rem;
   width: 24rem;
   row-gap: 0.5rem;
   @media ${({ theme }) => theme.device.mobile} {
