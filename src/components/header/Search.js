@@ -4,10 +4,11 @@
  * date: 2022-04-19
  * description: 메인-좌측 검색 영역
  */
-import React, { useState } from 'react';
-import * as _ from 'lodash-es';
+import React from 'react';
 import styled from 'styled-components';
+import { toggleSearch } from 'slices/viewControlSlice';
 import { HiOutlineDocumentSearch, HiOutlineSearch } from 'react-icons/hi';
+import { useDispatch } from 'react-redux';
 
 /* components' style */
 const searchIconStyle = {
@@ -27,7 +28,7 @@ const SearchWrapper = styled.div`
   justify-content: space-between;
   box-shadow: var(--shadow-md);
 `;
-const SearchForm = styled.form`
+const SearchDiv = styled.div`
   position: relative;
   flex: auto;
 `;
@@ -74,36 +75,24 @@ const SearchDetailButton = styled.button`
 
 /* components */
 const Search = () => {
-  // input value 및 change event
-  const [value, setValue] = useState('');
-  const handleInputChange = e => {
-    setValue(e.target.value);
-  };
-  const handleInputKeyUp = e => {
-    if (_.isEqual(e.key, 'Enter')) {
-      // searchFunction(e.target.value);
-    }
-  };
-  const handleFormSubmit = e => {
-    e.preventDefault();
-    // searchFunction(e.target.value);
+  const dispatch = useDispatch();
+  const handleClickEvent = () => {
+    dispatch(toggleSearch());
   };
 
   return (
     <SearchWrapper>
       <LogoWrapper title="value-wave">로고</LogoWrapper>
-      <SearchForm onSubmit={handleFormSubmit}>
+      <SearchDiv>
         <SearchInput
           type="text"
           placeholder="건물명, 지번, 도로명 검색"
-          onChange={handleInputChange}
-          onKeyUp={handleInputKeyUp}
-          value={value}
+          onClick={handleClickEvent}
         />
         <SearchButton type="submit" title="검색">
           <HiOutlineSearch style={searchIconStyle} />
         </SearchButton>
-      </SearchForm>
+      </SearchDiv>
       <LineDiv>
         <LineSpan />
       </LineDiv>

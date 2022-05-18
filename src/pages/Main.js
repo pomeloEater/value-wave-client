@@ -1,7 +1,9 @@
 import React from 'react';
-import Aside from 'components/aside/Aside';
 import Header from 'components/header/Header';
 import { Map } from 'components/map';
+import SearchAside from 'components/aside/SearchAside';
+import BasicAside from 'components/aside/BasicAside'; // TODO ASIDE index.js 생성
+import { useSelector } from 'react-redux';
 
 /** 지도 초기 중앙 좌표값 / 확대수준 */
 const center = {
@@ -11,11 +13,13 @@ const center = {
 const level = 4;
 
 const Main = () => {
+  const { searchMode } = useSelector(state => state.viewControl);
+
   return (
     <>
       <Map id="mapContainer" level={level} center={center} />
       <Header />
-      <Aside />
+      {searchMode ? <SearchAside /> : <BasicAside />}
     </>
   );
 };
