@@ -12,10 +12,15 @@ import {
   initMap,
   setAddressFromCenter,
   setLevelDivision,
+  setClickLocation,
 } from 'slices/mapControlSlice';
 import { MapControl, Marker, InfoMarker } from 'components/map';
 import useKakaoEvent from 'hooks/useKakaoEvent';
-import { getPolygonFeature, setKakaoEvent } from 'utils/kakaoUtils';
+import {
+  getKakaoLatLng,
+  getPolygonFeature,
+  setKakaoEvent,
+} from 'utils/kakaoUtils';
 // import { getPolygonFeature } from 'utils/kakaoUtils';
 const { kakao } = window;
 
@@ -126,11 +131,11 @@ const getPolygon = (map, feature) => {
 /** COMPONENTS **/
 const Map = ({ id, center, level }) => {
   const dispatch = useDispatch();
-  const { map, myLocation, markerPositions, polygonFeatures } = useSelector(
-    state => state.mapControl
-  );
+  const { map, myLocation, clickLocation, markerPositions, polygonFeatures } =
+    useSelector(state => state.mapControl);
   const [myLocationMarker, setMyLocationMarker] = useState(null);
   const [mapMarkers, setMapMarkers] = useState([]);
+  const [clickMarker, setClickMarker] = useState([]);
   const [layerPolygons, setLayerPolygons] = useState([]);
 
   /* 지도 초기화 */
@@ -154,6 +159,11 @@ const Map = ({ id, center, level }) => {
       e.latLng,
       e.point
     );
+    const latLng = {
+      latitude: e.latLng.getLat(),
+      longitude: e.latLng.getLng(),
+    };
+    dispatch(setClickLocation(latLng));
   });
 
   /* 확대레벨 -> 폴리곤 레이어 */
@@ -176,13 +186,19 @@ const Map = ({ id, center, level }) => {
   useEffect(() => {
     if (isNull(map) || isNull(myLocation) || isUndefined(myLocation)) return;
     setMyLocationMarker(getMapMarker(null, myLocation, { background: 'red' }));
-    const locPosition = new kakao.maps.LatLng(
-      myLocation.latitude,
-      myLocation.longitude
-    );
+    const locPosition = getKakaoLatLng(myLocation);
     map.setLevel(4);
     map.setCenter(locPosition);
   }, [myLocation]);
+
+  /* 클릭 위치 마커 추가 (임시) */
+  useEffect(() => {
+    if (isNull(map) || isNull(clickLocation) || isUndefined(clickLocation))
+      return;
+    setClickMarker(
+      getMapMarker(null, clickLocation, { background: 'hotpink' })
+    );
+  }, [clickLocation]);
 
   /* 마커 정보 추가 (임시) */
   useEffect(() => {
@@ -208,6 +224,7 @@ const Map = ({ id, center, level }) => {
     <MapContainer id={id} center={center} level={level}>
       <MapControl />
       {myLocationMarker}
+      {clickMarker}
       {mapMarkers}
     </MapContainer>
   );

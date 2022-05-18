@@ -29,6 +29,7 @@ const initialState = {
     DISTRICT: false,
   },
   myLocation: null,
+  clickLocation: null,
   markerPositions: [],
   polygonFeatures: [],
   centerAddress: '',
@@ -156,6 +157,14 @@ export const mapSlice = createSlice({
     setChickenMarkers: state => {
       state.markerPositions = chicken.positions;
     },
+    /**
+     * 클릭한 지점 좌표
+     * @param {*} state
+     * @param {*} action {latitude, longitude}
+     */
+    setClickLocation: (state, action) => {
+      state.clickLocation = action.payload;
+    },
   },
   extraReducers: builder => {
     builder
@@ -177,6 +186,7 @@ export const {
   zoomOut,
   toggleOverlayMapType,
   setChickenMarkers,
+  setClickLocation,
 } = mapSlice.actions;
 
 export {
