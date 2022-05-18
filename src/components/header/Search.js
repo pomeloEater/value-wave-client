@@ -17,7 +17,7 @@ const SearchWrapper = styled.div`
   width: 100%;
   height: 3rem;
   background-color: white;
-  border: 1px solid var(--color-gray-400);
+  border: 1px solid var(--color-gray-300);
   border-radius: 0.5rem;
   padding: 0 0.25rem;
   justify-content: space-between;
@@ -47,7 +47,7 @@ const SearchButton = styled.button`
   & svg {
     width: 1.8rem;
     height: 2rem;
-    color: #b9bbbe;
+    color: var(--color-gray-300);
   }
 `;
 const LineDiv = styled.div`

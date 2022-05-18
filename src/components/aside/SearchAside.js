@@ -17,7 +17,7 @@ const AsideWrapper = styled.aside`
   flex-direction: column;
   width: 24rem;
   height: 100%;
-  background-color: white;
+  background-color: var(--color-white);
   border-left: 1px;
   gap: 0.5rem;
   @media ${({ theme }) => theme.device.mobile} {
@@ -33,8 +33,8 @@ const AsideWrapper = styled.aside`
 const SearchWrapper = styled.div`
   display: flex;
   width: 100%;
-  background-color: white;
-  border-bottom: 1px solid var(--color-gray-400);
+  background-color: var(--color-white);
+  border-bottom: 1px solid var(--color-gray-300);
   padding: 0 0.25rem;
   justify-content: space-between;
   box-shadow: var(--shadow-sm);
@@ -49,7 +49,7 @@ const BackButton = styled.button`
   & svg {
     width: 1.8rem;
     height: 2rem;
-    color: #b9bbbe;
+    color: var(--color-gray-500);
   }
 `;
 const SearchInput = styled.input`
@@ -71,7 +71,7 @@ const SearchButton = styled.button`
   & svg {
     width: 1.8rem;
     height: 2rem;
-    color: #b9bbbe;
+    color: var(--color-gray-500);
   }
 `;
 const LineDiv = styled.div`
