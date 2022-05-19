@@ -6,8 +6,9 @@ import {
   HiOutlineSearch,
 } from 'react-icons/hi';
 import { isEqual } from 'lodash-es';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toggleSearch } from 'slices/viewControlSlice';
+const { kakao } = window;
 
 /* 범례 */
 const AsideWrapper = styled.aside`
@@ -92,10 +93,42 @@ const SearchDetailButton = styled.button`
   }
 `;
 
+const ResultsWrapper = styled.div`
+  width: 100%;
+  overflow-y: scroll;
+`;
+
+const ResultWrapper = props => {
+  const { map } = useSelector(state => state.mapControl);
+  const { addressName, roadAddressName, x, y } = props;
+  const handleClickEvent = () => {
+    const locPosition = new kakao.maps.LatLng(y, x);
+    map.setCenter(locPosition);
+  };
+  return (
+    <div onClick={handleClickEvent}>
+      <p>{addressName}</p>
+      <p>{roadAddressName}</p>
+    </div>
+  );
+};
+
 const SearchAside = () => {
   const dispatch = useDispatch();
   // input value 및 change event
   const [value, setValue] = useState('');
+  const [results, setResults] = useState([]);
+  const searchFunction = query => {
+    fetch(`api/local/search-address/${query}`)
+      .then(res => res.json())
+      .then(json => {
+        if (isEqual('success', json['_result_'])) {
+          setResults(json.data.documents);
+        } else {
+          setResults([]);
+        }
+      });
+  };
   const handleInputChange = e => {
     setValue(e.target.value);
   };
@@ -104,12 +137,12 @@ const SearchAside = () => {
   };
   const handleInputKeyUp = e => {
     if (isEqual(e.key, 'Enter')) {
-      // searchFunction(e.target.value);
+      searchFunction(e.target.value);
     }
   };
   const handleFormSubmit = e => {
     e.preventDefault();
-    // searchFunction(e.target.value);
+    searchFunction(e.target.value);
   };
   return (
     <AsideWrapper>
@@ -136,6 +169,18 @@ const SearchAside = () => {
           <HiOutlineDocumentSearch />
         </SearchDetailButton>
       </SearchWrapper>
+      <ResultsWrapper>
+        {results.length > 0 &&
+          results.map((result, index) => (
+            <ResultWrapper
+              key={index}
+              addressName={result.address_name}
+              roadAddressName={result.road_address.address_name}
+              x={result.x}
+              y={result.y}
+            />
+          ))}
+      </ResultsWrapper>
     </AsideWrapper>
   );
 };
