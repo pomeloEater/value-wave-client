@@ -38,6 +38,7 @@ const GlobalStyle = createGlobalStyle`
     height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    font-family: 'Pretendard';
   }
 
   #root {
@@ -49,7 +50,40 @@ const GlobalStyle = createGlobalStyle`
   }
 
   h1 {
-    
+    font-family: 'Pretendard';
+    font-weight: 800;
+    font-size: 40px;
+    /* line-height: 48px; */
+  }
+  h2 {
+    font-family: 'Pretendard';
+    font-weight: 800;
+    font-size: 32px;
+    /* line-height: 38px; */
+  }
+  h3 {
+    font-family: 'Pretendard';
+    font-weight: 800;
+    font-size: 24px;
+    /* line-height: 29px; */
+  }
+  h4 {
+    font-family: 'Pretendard';
+    font-weight: 800;
+    font-size: 20px;
+    /* line-height: 24px; */
+  }
+  h5 {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    font-size: 14px;
+    /* line-height: 17px; */
+  }
+  h6 {
+    font-family: 'Pretendard';
+    font-weight: 300;
+    font-size: 12px;
+    /* line-height: 14px; */
   }
 `;
 
