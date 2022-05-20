@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import {
   HiArrowNarrowLeft,
   HiOutlineDocumentSearch,
   HiOutlineSearch,
 } from 'react-icons/hi';
-import { isEqual } from 'lodash-es';
+import { isEmpty, isEqual } from 'lodash-es';
 import { useDispatch, useSelector } from 'react-redux';
 import { toggleSearch } from 'slices/viewControlSlice';
 const { kakao } = window;
@@ -100,7 +100,7 @@ const ResultsWrapper = styled.div`
 
 const ResultWrapper = props => {
   const { map } = useSelector(state => state.mapControl);
-  const { addressName, roadAddressName, x, y } = props;
+  const { addressName, x, y } = props;
   const handleClickEvent = () => {
     const locPosition = new kakao.maps.LatLng(y, x);
     map.setCenter(locPosition);
@@ -108,7 +108,6 @@ const ResultWrapper = props => {
   return (
     <div onClick={handleClickEvent}>
       <p>{addressName}</p>
-      <p>{roadAddressName}</p>
     </div>
   );
 };
@@ -119,6 +118,10 @@ const SearchAside = () => {
   const [value, setValue] = useState('');
   const [results, setResults] = useState([]);
   const searchFunction = query => {
+    if (isEmpty(query)) {
+      setResults([]);
+      return;
+    }
     fetch(`api/local/search-address/${query}`)
       .then(res => res.json())
       .then(json => {
@@ -135,15 +138,21 @@ const SearchAside = () => {
   const handleClickEvent = () => {
     dispatch(toggleSearch());
   };
-  const handleInputKeyUp = e => {
-    if (isEqual(e.key, 'Enter')) {
-      searchFunction(e.target.value);
-    }
+  const handleInputKeyDown = e => {
+    // if (isEqual(e.key, 'Enter')) {
+    searchFunction(e.target.value);
+    // }
   };
   const handleFormSubmit = e => {
     e.preventDefault();
     searchFunction(e.target.value);
   };
+  // 활성화 시 자동 포커스
+  const inputRef = useRef(null);
+  useEffect(() => {
+    if (inputRef.current !== null) inputRef.current.focus();
+  });
+
   return (
     <AsideWrapper>
       <SearchWrapper>
@@ -155,8 +164,9 @@ const SearchAside = () => {
             type="text"
             placeholder="건물명, 지번, 도로명 검색"
             onChange={handleInputChange}
-            onKeyUp={handleInputKeyUp}
+            onKeyDown={handleInputKeyDown}
             value={value}
+            ref={inputRef}
           />
           <SearchButton type="submit" title="검색">
             <HiOutlineSearch />
@@ -175,7 +185,6 @@ const SearchAside = () => {
             <ResultWrapper
               key={index}
               addressName={result.address_name}
-              roadAddressName={result.road_address.address_name}
               x={result.x}
               y={result.y}
             />
