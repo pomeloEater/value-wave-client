@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { isEmpty, isEqual } from 'lodash-es';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { toggleSearch } from 'slices/viewControlSlice';
 import AsideSearch from 'components/aside/AsideSearch';
-// const { kakao } = window;
+const { kakao } = window;
 
 /* 범례 */
 const AsideWrapper = styled.aside`
@@ -52,26 +52,34 @@ const SmallTitleWrapper = styled.span`
 `;
 
 const Result = props => {
-  // const { map } = useSelector(state => state.mapControl);
-  const { bdNm, jibunAddr, roadAddr, bdMgtSn } = props;
-  const pnuCode = bdMgtSn.substring(0, 19);
+  const { map } = useSelector(state => state.mapControl);
+  const { bdNm, jibunAddr, roadAddr, /* bdMgtSn, */ entX, entY } = props;
+  // const pnuCode = bdMgtSn.substring(0, 19);
   const handleClickEvent = e => {
-    // const locPosition = new kakao.maps.LatLng(y, x);
-    // map.setCenter(locPosition);
     console.log(e);
-    console.log(pnuCode);
+    // console.log(pnuCode);
+    const locPosition = new kakao.maps.LatLng(entY, entX);
+    map.setCenter(locPosition);
   };
   return (
     <ResultWrapper onClick={handleClickEvent}>
       <p>{bdNm}</p>
-      <h5>
-        <SmallTitleWrapper>지번주소</SmallTitleWrapper>
-        {jibunAddr}
-      </h5>
-      <h5>
-        <SmallTitleWrapper>도로명주소</SmallTitleWrapper>
-        {roadAddr}
-      </h5>
+      {jibunAddr ? (
+        <h5>
+          <SmallTitleWrapper>지번주소</SmallTitleWrapper>
+          {jibunAddr}
+        </h5>
+      ) : (
+        ''
+      )}
+      {roadAddr ? (
+        <h5>
+          <SmallTitleWrapper>도로명주소</SmallTitleWrapper>
+          {roadAddr}
+        </h5>
+      ) : (
+        ''
+      )}
     </ResultWrapper>
   );
 };
@@ -100,6 +108,17 @@ const SearchAside = () => {
       setResults([]);
       return;
     }
+    /** 카카오 로컬 api */
+    // fetch(`api/local/search-address/${query}`)
+    //   .then(res => res.json())
+    //   .then(json => {
+    //     if (isEqual('success', json['_result_'])) {
+    //       setResults(json.data.documents);
+    //     } else {
+    //       setResults([]);
+    //     }
+    //   });
+    /**  도로명주소 api */
     fetch(`api/jusoro/search-address/${query}`)
       .then(res => res.json())
       .then(json => {
@@ -125,10 +144,18 @@ const SearchAside = () => {
           results.map((result, index) => (
             <Result
               key={index}
+              /** 카카오로컬 */
+              // bdNm={result.address_name}
+              // jibunAddr={result?.address?.address_name || ''}
+              // roadAddr={result?.road_address?.address_name || ''}
+              /** 도로명주소 */
               bdNm={result.bdNm}
               jibunAddr={result.jibunAddr}
               roadAddr={result.roadAddr}
-              bdMgtSn={result.bdMgtSn}
+              /** 공통(JUSORO || KAKAO) */
+              bdMgtSn={result.bdMgtSn || 0}
+              entX={result.entX || result.x}
+              entY={result.entY || result.y}
               // active={index == activeIndex}
             />
           ))}
