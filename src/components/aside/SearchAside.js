@@ -108,17 +108,6 @@ const SearchAside = () => {
       setResults([]);
       return;
     }
-    /** 카카오 로컬 api */
-    // fetch(`api/local/search-address/${query}`)
-    //   .then(res => res.json())
-    //   .then(json => {
-    //     if (isEqual('success', json['_result_'])) {
-    //       setResults(json.data.documents);
-    //     } else {
-    //       setResults([]);
-    //     }
-    //   });
-    /**  도로명주소 api */
     fetch(`api/jusoro/search-address/${query}`)
       .then(res => res.json())
       .then(json => {
@@ -144,15 +133,9 @@ const SearchAside = () => {
           results.map((result, index) => (
             <Result
               key={index}
-              /** 카카오로컬 */
-              // bdNm={result.address_name}
-              // jibunAddr={result?.address?.address_name || ''}
-              // roadAddr={result?.road_address?.address_name || ''}
-              /** 도로명주소 */
               bdNm={result.bdNm}
               jibunAddr={result.jibunAddr}
               roadAddr={result.roadAddr}
-              /** 공통(JUSORO || KAKAO) */
               bdMgtSn={result.bdMgtSn || 0}
               entX={result.entX || result.x}
               entY={result.entY || result.y}
