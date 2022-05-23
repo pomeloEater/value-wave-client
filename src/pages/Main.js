@@ -17,9 +17,9 @@ const Main = () => {
 
   return (
     <>
-      <Map id="mapContainer" level={level} center={center} />
       <Header />
       {searchMode ? <SearchAside /> : <BasicAside />}
+      <Map id="mapContainer" level={level} center={center} />
     </>
   );
 };

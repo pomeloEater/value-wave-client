@@ -121,6 +121,7 @@ export const mapSlice = createSlice({
       };
       const kakaomap = new kakao.maps.Map(container, options);
       kakaomap.setMaxLevel(12);
+      kakaomap.setCursor('default');
       state.map = kakaomap;
     },
     /**

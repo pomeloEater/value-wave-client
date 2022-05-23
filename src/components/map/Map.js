@@ -26,8 +26,10 @@ const { kakao } = window;
 
 /** ELEMENTS **/
 const MapContainer = styled.div`
+  position: relative;
+  float: left;
   width: 100%;
-  height: 100%;
+  height: inherit;
 `;
 
 /** FUNCTIONS **/
@@ -144,10 +146,16 @@ const Map = ({ id, center, level }) => {
   }, []);
 
   /* 중심좌표 -> 법정동 정보  */
-  useKakaoEvent(map, 'tilesloaded', () => {
-    fetch(dispatch(setAddressFromCenter(map.getCenter()))).then(() => {
-      dispatch(setLevelDivision(map.getLevel()));
-    });
+  useKakaoEvent(map, 'tilesloaded', async () => {
+    try {
+      const result = await dispatch(
+        setAddressFromCenter(map.getCenter())
+      ).unwrap();
+      console.log(result);
+      return dispatch(setLevelDivision(map.getLevel()));
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   /* 클릭 시 좌표 표출 */

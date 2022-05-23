@@ -36,6 +36,7 @@ const SearchInput = styled.input`
   padding: 0.25rem;
   margin-right: 0px;
   border: 1px transparent;
+  flex-grow: 1;
   &:focus {
     outline: 2px solid transparent;
     outline-offset: 2px;

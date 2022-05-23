@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 /* 범례 */
 const AsideWrapper = styled.aside`
-  position: absolute;
+  position: inherit;
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -16,9 +16,10 @@ const AsideWrapper = styled.aside`
   border-left: 1px;
   gap: 0.5rem;
   @media ${({ theme }) => theme.device.mobile} {
-    width: 100%;
-    height: auto;
-    bottom: 0;
+    /* width: 100%; */
+    /* height: auto; */
+    /* bottom: 0; */
+    display: none;
   }
   @media ${({ theme }) => theme.device.laptop} {
   }
@@ -40,7 +41,7 @@ const BasicAside = () => {
   return (
     <AsideWrapper>
       <LocationWrapper>
-        <h1>{centerAddress}</h1>
+        <h3>{centerAddress}</h3>
       </LocationWrapper>
     </AsideWrapper>
   );

@@ -11,13 +11,14 @@ const AsideWrapper = styled.aside`
   position: relative;
   z-index: 30;
   display: grid;
+  grid-template-rows: 50px auto;
   width: 24rem;
   height: 100%;
   background-color: var(--color-white);
   border-left: 1px;
   @media ${({ theme }) => theme.device.mobile} {
     width: 100%;
-    height: auto;
+    height: 100%;
     bottom: 0;
   }
   @media ${({ theme }) => theme.device.laptop} {

@@ -36,17 +36,23 @@ const GlobalStyle = createGlobalStyle`
   body {
     min-width: 320px;
     height: 100vh;
+    overflow: hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-family: 'Pretendard';
   }
 
   #root {
-    display: flex;
     width: 100%;
     height: 100%;
     overflow: hidden;
-    color: rgb(31 41 55)
+    color: rgb(31 41 55);
+    display: grid;
+    grid-template-rows: 100%;
+    grid-template-columns: 384px auto;
+    @media screen and (max-width: 640px) {
+      grid-template-columns: auto;
+    }
   }
 
   h1 {
