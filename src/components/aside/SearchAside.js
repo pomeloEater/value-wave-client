@@ -1,26 +1,20 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import {
-  HiArrowNarrowLeft,
-  HiOutlineDocumentSearch,
-  HiOutlineSearch,
-} from 'react-icons/hi';
 import { isEmpty, isEqual } from 'lodash-es';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { toggleSearch } from 'slices/viewControlSlice';
-const { kakao } = window;
+import AsideSearch from 'components/aside/AsideSearch';
+// const { kakao } = window;
 
 /* 범례 */
 const AsideWrapper = styled.aside`
-  position: absolute;
+  position: relative;
   z-index: 30;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   width: 24rem;
   height: 100%;
   background-color: var(--color-white);
   border-left: 1px;
-  gap: 0.5rem;
   @media ${({ theme }) => theme.device.mobile} {
     width: 100%;
     height: auto;
@@ -31,162 +25,110 @@ const AsideWrapper = styled.aside`
 `;
 
 /* elements */
-const SearchWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  background-color: var(--color-white);
-  border-bottom: 1px solid var(--color-gray-300);
-  padding: 0 0.25rem;
-  justify-content: space-between;
-  box-shadow: var(--shadow-sm);
-`;
-const SearchForm = styled.form`
-  position: relative;
-  display: flex;
-  flex-grow: 1;
-`;
-const BackButton = styled.button`
-  padding: 0.25rem;
-  & svg {
-    width: 1.8rem;
-    height: 2rem;
-    color: var(--color-gray-500);
-  }
-`;
-const SearchInput = styled.input`
-  width: auto;
-  padding: 0.75rem 0.25rem;
-  margin-right: 0px;
-  border: 1px transparent;
-  flex-grow: 1;
-  &:focus {
-    outline: 2px solid transparent;
-    outline-offset: 2px;
-  }
-`;
-const SearchButton = styled.button`
-  padding: 0.25rem;
-  width: 2.1rem;
-  right: 0px;
-  top: 0.2rem;
-  & svg {
-    width: 1.8rem;
-    height: 2rem;
-    color: var(--color-gray-500);
-  }
-`;
-const LineDiv = styled.div`
-  margin: auto 0.25rem;
-`;
-const LineSpan = styled.span`
-  width: 1px;
-  background: #000;
-  opacity: 0.1;
-  height: 2rem;
-  display: block;
-`;
-const SearchDetailButton = styled.button`
-  padding: 0.25rem;
-  & svg {
-    width: 1.8rem;
-    height: 2rem;
-  }
-`;
 
 const ResultsWrapper = styled.div`
+  position: inherit;
   width: 100%;
-  overflow-y: scroll;
+  overflow-y: auto;
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 `;
 
-const ResultWrapper = props => {
-  const { map } = useSelector(state => state.mapControl);
-  const { addressName, x, y } = props;
-  const handleClickEvent = () => {
-    const locPosition = new kakao.maps.LatLng(y, x);
-    map.setCenter(locPosition);
+const ResultWrapper = styled.div`
+  background-color: var(--color-gray-100);
+  padding: 0.5rem 1rem;
+  &:hover {
+    background-color: var(--color-gray-300);
+    font-weight: 300;
+  }
+`;
+
+const SmallTitleWrapper = styled.span`
+  font-weight: 600;
+  margin-right: 0.25rem;
+`;
+
+const Result = props => {
+  // const { map } = useSelector(state => state.mapControl);
+  const { bdNm, jibunAddr, roadAddr, bdMgtSn } = props;
+  const pnuCode = bdMgtSn.substring(0, 19);
+  const handleClickEvent = e => {
+    // const locPosition = new kakao.maps.LatLng(y, x);
+    // map.setCenter(locPosition);
+    console.log(e);
+    console.log(pnuCode);
   };
   return (
-    <div onClick={handleClickEvent}>
-      <p>{addressName}</p>
-    </div>
+    <ResultWrapper onClick={handleClickEvent}>
+      <p>{bdNm}</p>
+      <h5>
+        <SmallTitleWrapper>지번주소</SmallTitleWrapper>
+        {jibunAddr}
+      </h5>
+      <h5>
+        <SmallTitleWrapper>도로명주소</SmallTitleWrapper>
+        {roadAddr}
+      </h5>
+    </ResultWrapper>
   );
 };
 
 const SearchAside = () => {
   const dispatch = useDispatch();
-  // input value 및 change event
-  const [value, setValue] = useState('');
   const [results, setResults] = useState([]);
-  const searchFunction = query => {
-    if (isEmpty(query)) {
-      setResults([]);
-      return;
-    }
-    fetch(`api/local/search-address/${query}`)
-      .then(res => res.json())
-      .then(json => {
-        if (isEqual('success', json['_result_'])) {
-          setResults(json.data.documents);
-        } else {
-          setResults([]);
-        }
-      });
-  };
-  const handleInputChange = e => {
-    setValue(e.target.value);
-  };
+  // const [activeIndex, setActiveIndex] = useState(0);
+
+  /* functions */
   const handleClickEvent = () => {
     dispatch(toggleSearch());
   };
   const handleInputKeyDown = e => {
-    // if (isEqual(e.key, 'Enter')) {
-    searchFunction(e.target.value);
-    // }
+    if (isEqual(e.key, 'Enter')) {
+      searchFunction(e.target.value);
+    }
   };
   const handleFormSubmit = e => {
     e.preventDefault();
     searchFunction(e.target.value);
   };
-  // 활성화 시 자동 포커스
-  const inputRef = useRef(null);
-  useEffect(() => {
-    if (inputRef.current !== null) inputRef.current.focus();
-  });
+  const placeholder = '건물명, 지번, 도로명 검색';
+  const searchFunction = query => {
+    if (isEmpty(query)) {
+      setResults([]);
+      return;
+    }
+    fetch(`api/jusoro/search-address/${query}`)
+      .then(res => res.json())
+      .then(json => {
+        if (isEqual('success', json['_result_'])) {
+          console.log(json);
+          setResults(json.data.juso);
+        } else {
+          setResults([]);
+        }
+      });
+  };
 
   return (
     <AsideWrapper>
-      <SearchWrapper>
-        <BackButton type="button" title="뒤로가기" onClick={handleClickEvent}>
-          <HiArrowNarrowLeft />
-        </BackButton>
-        <SearchForm onSubmit={handleFormSubmit}>
-          <SearchInput
-            type="text"
-            placeholder="건물명, 지번, 도로명 검색"
-            onChange={handleInputChange}
-            onKeyDown={handleInputKeyDown}
-            value={value}
-            ref={inputRef}
-          />
-          <SearchButton type="submit" title="검색">
-            <HiOutlineSearch />
-          </SearchButton>
-        </SearchForm>
-        <LineDiv>
-          <LineSpan />
-        </LineDiv>
-        <SearchDetailButton type="button" title="상세검색">
-          <HiOutlineDocumentSearch />
-        </SearchDetailButton>
-      </SearchWrapper>
+      <AsideSearch
+        handleClickEvent={handleClickEvent}
+        handleInputKeyDown={handleInputKeyDown}
+        handleFormSubmit={handleFormSubmit}
+        placeholder={placeholder}
+      />
       <ResultsWrapper>
         {results.length > 0 &&
           results.map((result, index) => (
-            <ResultWrapper
+            <Result
               key={index}
-              addressName={result.address_name}
-              x={result.x}
-              y={result.y}
+              bdNm={result.bdNm}
+              jibunAddr={result.jibunAddr}
+              roadAddr={result.roadAddr}
+              bdMgtSn={result.bdMgtSn}
+              // active={index == activeIndex}
             />
           ))}
       </ResultsWrapper>
