@@ -1,5 +1,5 @@
 /**
- * Search.js
+ * HeaderSearch.js
  * author: owen
  * date: 2022-04-19
  * description: 메인-좌측 검색 영역
@@ -69,7 +69,7 @@ const SearchDetailButton = styled.button`
 `;
 
 /* components */
-const Search = () => {
+const HeaderSearch = () => {
   const dispatch = useDispatch();
   const handleClickEvent = () => {
     dispatch(toggleSearch());
@@ -97,4 +97,4 @@ const Search = () => {
   );
 };
 
-export default Search;
+export default HeaderSearch;

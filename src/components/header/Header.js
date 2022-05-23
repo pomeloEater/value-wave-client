@@ -6,7 +6,7 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-import Search from 'components/header/Search';
+import HeaderSearch from 'components/header/HeaderSearch';
 
 const HeaderWrapper = styled.header`
   position: absolute;
@@ -28,7 +28,7 @@ const HeaderWrapper = styled.header`
 const Header = () => {
   return (
     <HeaderWrapper>
-      <Search />
+      <HeaderSearch />
     </HeaderWrapper>
   );
 };
