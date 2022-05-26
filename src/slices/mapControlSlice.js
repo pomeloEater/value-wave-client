@@ -116,7 +116,9 @@ export const mapSlice = createSlice({
       const { id, center, level } = action.payload;
       const container = document.getElementById(id || 'mapContainer');
       const options = {
-        center: getKakaoLatLng(center),
+        center: getKakaoLatLng({
+          position: center,
+        }),
         level,
       };
       const kakaomap = new kakao.maps.Map(container, options);
