@@ -194,7 +194,8 @@ const Map = ({ id, center, level }) => {
   useEffect(() => {
     if (isNull(map) || isNull(myLocation) || isUndefined(myLocation)) return;
     setMyLocationMarker(getMapMarker(null, myLocation, { background: 'red' }));
-    const locPosition = getKakaoLatLng(myLocation);
+    console.log(myLocation); // TODO 삭제 필요
+    const locPosition = getKakaoLatLng({ position: myLocation });
     map.setLevel(4);
     map.setCenter(locPosition);
   }, [myLocation]);
@@ -206,7 +207,7 @@ const Map = ({ id, center, level }) => {
     setClickMarker(
       getMapMarker(null, clickLocation, { background: 'hotpink' })
     );
-  }, [clickLocation]);
+  }, [clickLocation, clickMarker]);
 
   /* 마커 정보 추가 (임시) */
   useEffect(() => {

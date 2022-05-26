@@ -73,7 +73,7 @@ const InfoMarker = ({
   onInfoClick,
 }) => {
   const { map } = useSelector(state => state.mapControl);
-  const kakaoPosition = getKakaoLatLng(position);
+  const kakaoPosition = getKakaoLatLng({ position });
   const container = useRef(null);
   const [visible, setVisible] = useState(true);
 

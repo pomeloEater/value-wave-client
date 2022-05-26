@@ -26,7 +26,7 @@ const Marker = ({
   onClickEvent,
 }) => {
   const { map } = useSelector(state => state.mapControl);
-  const kakaoPosition = getKakaoLatLng(position);
+  const kakaoPosition = getKakaoLatLng({ position });
   const container = useRef(null);
 
   const marker = new kakao.maps.CustomOverlay({

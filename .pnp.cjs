@@ -83,6 +83,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["postcss-normalize", "virtual:0d983b7188274a57d3184ddfafa2cf0df0c7bb2a09dbe9aa95d07a99fff03e14b0bb2584e86ff99b5ff9829d7ddaf9244428d5191493fbb5fad3782cda170e5e#npm:10.0.1"],\
             ["postcss-preset-env", "virtual:0d983b7188274a57d3184ddfafa2cf0df0c7bb2a09dbe9aa95d07a99fff03e14b0bb2584e86ff99b5ff9829d7ddaf9244428d5191493fbb5fad3782cda170e5e#npm:7.4.3"],\
             ["pretendard", "npm:1.2.2"],\
+            ["proj4", "npm:2.8.0"],\
             ["prompts", "npm:2.4.2"],\
             ["react", "npm:18.0.0"],\
             ["react-app-polyfill", "npm:3.0.0"],\
@@ -6364,6 +6365,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["postcss-normalize", "virtual:0d983b7188274a57d3184ddfafa2cf0df0c7bb2a09dbe9aa95d07a99fff03e14b0bb2584e86ff99b5ff9829d7ddaf9244428d5191493fbb5fad3782cda170e5e#npm:10.0.1"],\
             ["postcss-preset-env", "virtual:0d983b7188274a57d3184ddfafa2cf0df0c7bb2a09dbe9aa95d07a99fff03e14b0bb2584e86ff99b5ff9829d7ddaf9244428d5191493fbb5fad3782cda170e5e#npm:7.4.3"],\
             ["pretendard", "npm:1.2.2"],\
+            ["proj4", "npm:2.8.0"],\
             ["prompts", "npm:2.4.2"],\
             ["react", "npm:18.0.0"],\
             ["react-app-polyfill", "npm:3.0.0"],\
@@ -11476,6 +11478,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["mgrs", [\
+        ["npm:1.0.0", {\
+          "packageLocation": "./.yarn/cache/mgrs-npm-1.0.0-59b350d2cc-98b9fa3caf.zip/node_modules/mgrs/",\
+          "packageDependencies": [\
+            ["mgrs", "npm:1.0.0"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
       ["micromatch", [\
         ["npm:4.0.5", {\
           "packageLocation": "./.yarn/cache/micromatch-npm-4.0.5-cfab5d7669-02a17b671c.zip/node_modules/micromatch/",\
@@ -14138,6 +14149,17 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./.yarn/cache/process-nextick-args-npm-2.0.1-b8d7971609-1d38588e52.zip/node_modules/process-nextick-args/",\
           "packageDependencies": [\
             ["process-nextick-args", "npm:2.0.1"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["proj4", [\
+        ["npm:2.8.0", {\
+          "packageLocation": "./.yarn/cache/proj4-npm-2.8.0-6aba445ddd-05c46387ac.zip/node_modules/proj4/",\
+          "packageDependencies": [\
+            ["proj4", "npm:2.8.0"],\
+            ["mgrs", "npm:1.0.0"],\
+            ["wkt-parser", "npm:1.3.2"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -16997,6 +17019,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["wide-align", "npm:1.1.5"],\
             ["string-width", "npm:4.2.3"]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["wkt-parser", [\
+        ["npm:1.3.2", {\
+          "packageLocation": "./.yarn/cache/wkt-parser-npm-1.3.2-e3640b774f-35318a7fb3.zip/node_modules/wkt-parser/",\
+          "packageDependencies": [\
+            ["wkt-parser", "npm:1.3.2"]\
           ],\
           "linkType": "HARD"\
         }]\
