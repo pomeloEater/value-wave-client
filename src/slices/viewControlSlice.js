@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 /** 초기값 */
 const initialState = {
   searchMode: false,
+  pnu: '',
 };
 
 /**
@@ -15,9 +16,12 @@ export const viewSlice = createSlice({
     toggleSearch: state => {
       state.searchMode = !state.searchMode;
     },
+    setPnu: (state, action) => {
+      state.pnu = action.payload;
+    },
   },
 });
 
-export const { toggleSearch } = viewSlice.actions;
+export const { toggleSearch, setPnu } = viewSlice.actions;
 
 export default viewSlice.reducer;
