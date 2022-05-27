@@ -4,8 +4,9 @@ import { isEmpty, isEqual } from 'lodash-es';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPnu, toggleSearch } from 'slices/viewControlSlice';
 import AsideSearch from 'components/aside/AsideSearch';
-import BasicModal from 'components/modal/BasicModal';
-const { kakao } = window;
+import { getKakaoLatLng } from 'utils/kakaoUtils';
+// import BasicModal from 'components/modal/BasicModal';
+// const { kakao } = window;
 
 /* 범례 */
 const AsideWrapper = styled.aside`
@@ -57,8 +58,11 @@ const Result = props => {
   const { map } = useSelector(state => state.mapControl);
   const { bdNm, jibunAddr, roadAddr, pnu, entX, entY, active } = props;
   const handleClickEvent = () => {
-    const locPosition = new kakao.maps.LatLng(entY, entX);
     setPnu(pnu);
+    const locPosition = getKakaoLatLng({
+      position: { entX, entY },
+      latType: 'entX',
+    });
     map.setCenter(locPosition);
   };
   return (
@@ -89,7 +93,8 @@ const SearchAside = () => {
   const [isLoading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
-  const [modalOpened, setModalOpened] = useState(true);
+  const [errorMessage, setErrorMessage] = useState(null);
+  // const [modalOpened, setModalOpened] = useState(true);
 
   /* functions */
   const handleClickEvent = () => {
@@ -115,24 +120,23 @@ const SearchAside = () => {
     fetch(`api/jusoro/search-address/${query}`)
       .then(res => res.json())
       .then(json => {
-        setLoading(false);
         if (isEqual('success', json['_result_'])) {
-          console.log(json);
+          setErrorMessage(null);
           setResults(json.data.juso);
         } else {
+          setErrorMessage(json.data.common.errorMessage);
           setResults([]);
         }
+        setLoading(false);
       });
   };
-  const handleModalOpen = props => {
-    const { pnu, index } = props;
-    setModalOpened(true);
-    setPnu(pnu);
+  const handleModalOpen = index => {
+    // setModalOpened(true);
     activeIndex == index ? setActiveIndex(null) : setActiveIndex(index);
   };
-  const handleModalClose = () => {
-    setModalOpened(false);
-  };
+  // const handleModalClose = () => {
+  //   setModalOpened(false);
+  // };
 
   return (
     <AsideWrapper>
@@ -143,9 +147,8 @@ const SearchAside = () => {
         placeholder={placeholder}
       />
       <ResultsWrapper>
-        {isLoading ? (
-          <h5 style={{ textAlign: 'center' }}>검색 중입니다.</h5>
-        ) : results.length > 0 ? (
+        {isLoading && <h5 style={{ textAlign: 'center' }}>검색 중입니다.</h5>}
+        {results.length > 0 ? (
           results.map((result, index) => (
             <Result
               key={index}
@@ -156,18 +159,20 @@ const SearchAside = () => {
               entX={result.entX}
               entY={result.entY}
               active={index == activeIndex}
-              onClick={() => handleModalOpen(index, result.pnu)}
+              onClick={() => handleModalOpen(index)}
             />
           ))
         ) : (
-          <h5 style={{ textAlign: 'center' }}>검색 결과가 없습니다.</h5>
+          <h5 style={{ textAlign: 'center' }}>
+            {errorMessage || '검색 결과가 없습니다.'}
+          </h5>
         )}
       </ResultsWrapper>
-      {modalOpened && (
+      {/* {modalOpened && (
         <BasicModal closeModal={handleModalClose} title={'테스트'}>
           테스트내용
         </BasicModal>
-      )}
+      )} */}
     </AsideWrapper>
   );
 };

@@ -3,10 +3,13 @@ import proj4 from 'proj4';
 const { kakao } = window;
 
 // projection 설정
-proj4.defs(
-  'GRS-80',
-  '+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs'
-);
+proj4.defs([
+  [
+    'GRS80',
+    '+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs',
+  ],
+  ['WGS84', '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'],
+]);
 
 /**
  * 좌표 객체(WGS84) 생성
@@ -22,10 +25,10 @@ const getKakaoLatLng = props => {
     key => key == 'lng' || key == 'lon' || key == 'entX' || key == 'longitude'
   );
   let latTypeFromPosition = keyArray[latIndex];
-  // GRS-80인 경우 좌표계 변환
-  let projArray = [];
+  // GRS80인 경우 좌표계 변환
+  let projArray = null;
   if (latTypeFromPosition == 'entX') {
-    projArray = proj4('GRS-80', 'EPSG:4326', [position.entY, position.entX]);
+    projArray = proj4('GRS80', 'WGS84', [position.entX, position.entY]);
   }
   switch (latType || latTypeFromPosition) {
     case 'lng':
