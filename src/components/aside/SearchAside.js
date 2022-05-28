@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setPnu, toggleSearch } from 'slices/viewControlSlice';
 import AsideSearch from 'components/aside/AsideSearch';
 import { getKakaoLatLng } from 'utils/kakaoUtils';
+import { setSearchResults } from 'slices/mapControlSlice';
 // import BasicModal from 'components/modal/BasicModal';
 // const { kakao } = window;
 
@@ -90,8 +91,8 @@ const Result = props => {
 
 const SearchAside = () => {
   const dispatch = useDispatch();
+  const { searchResults } = useSelector(state => state.mapControl);
   const [isLoading, setLoading] = useState(false);
-  const [results, setResults] = useState([]);
   const [activeIndex, setActiveIndex] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   // const [modalOpened, setModalOpened] = useState(true);
@@ -113,7 +114,6 @@ const SearchAside = () => {
   const searchFunction = query => {
     setLoading(true);
     if (isEmpty(query)) {
-      setResults([]);
       setLoading(false);
       return;
     }
@@ -122,10 +122,10 @@ const SearchAside = () => {
       .then(json => {
         if (isEqual('success', json['_result_'])) {
           setErrorMessage(null);
-          setResults(json.data.juso);
+          dispatch(setSearchResults(json.data.juso));
         } else {
           setErrorMessage(json.data.common.errorMessage);
-          setResults([]);
+          dispatch(setSearchResults([]));
         }
         setLoading(false);
       });
@@ -148,8 +148,8 @@ const SearchAside = () => {
       />
       <ResultsWrapper>
         {isLoading && <h5 style={{ textAlign: 'center' }}>검색 중입니다.</h5>}
-        {results.length > 0 ? (
-          results.map((result, index) => (
+        {searchResults.length > 0 ? (
+          searchResults.map((result, index) => (
             <Result
               key={index}
               bdNm={result.bdNm}

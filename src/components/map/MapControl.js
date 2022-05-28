@@ -13,8 +13,8 @@ import {
   zoomOut,
   setCurrentPosition,
   toggleOverlayMapType,
-  setChickenMarkers,
 } from 'slices/mapControlSlice';
+import BasicModal from 'components/modal/BasicModal';
 
 const MapControlWrapper = styled.nav`
   position: absolute;
@@ -79,6 +79,15 @@ const MapControl = () => {
     setVisible(!isVisible);
   };
 
+  const [modalOpened, setModalOpened] = useState(false);
+
+  const handleModalOpen = () => {
+    setModalOpened(true);
+  };
+  const handleModalClose = () => {
+    setModalOpened(false);
+  };
+
   return (
     <MapControlWrapper>
       <ButtonWrapper>
@@ -133,10 +142,15 @@ const MapControl = () => {
             </SubButtonWrapper>
           )}
         </Button>
-        <Button title="테스트" onClick={() => dispatch(setChickenMarkers())}>
+        <Button title="테스트" onClick={() => handleModalOpen()}>
           T
         </Button>
       </ButtonWrapper>
+      {modalOpened && (
+        <BasicModal closeModal={handleModalClose} title={'테스트'}>
+          테스트내용
+        </BasicModal>
+      )}
     </MapControlWrapper>
   );
 };

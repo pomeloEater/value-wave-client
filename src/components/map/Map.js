@@ -133,10 +133,17 @@ const getPolygon = (map, feature) => {
 /** COMPONENTS **/
 const Map = ({ id, center, level }) => {
   const dispatch = useDispatch();
-  const { map, myLocation, clickLocation, markerPositions, polygonFeatures } =
-    useSelector(state => state.mapControl);
+  const {
+    map,
+    myLocation,
+    clickLocation,
+    markerPositions,
+    searchResults,
+    polygonFeatures,
+  } = useSelector(state => state.mapControl);
   const [myLocationMarker, setMyLocationMarker] = useState(null);
   const [mapMarkers, setMapMarkers] = useState([]);
+  const [searchMarkers, setSearchMarkers] = useState([]);
   const [clickMarker, setClickMarker] = useState([]);
   const [layerPolygons, setLayerPolygons] = useState([]);
 
@@ -229,10 +236,29 @@ const Map = ({ id, center, level }) => {
     setMapMarkers(newMapMarkers);
   }, [markerPositions]);
 
+  /* 검색결과 정보 추가  */
+  useEffect(() => {
+    if (isNull(searchResults)) return;
+    if (searchMarkers?.length > 0) {
+      searchMarkers.foEach(searchMarker => searchMarker.setMap(null));
+    }
+    let tempKey = 0;
+    const newSearchMarkers = searchResults.map(position =>
+      getInfoMarker(
+        tempKey++,
+        { type: '상업용건물', year: "'20 12월", price: '2200억' },
+        position,
+        { background: 'aqua' }
+      )
+    );
+    setSearchMarkers(newSearchMarkers);
+  }, [searchResults]);
+
   return (
     <MapContainer id={id} center={center} level={level}>
       <MapControl />
       {myLocationMarker}
+      {searchMarkers}
       {clickMarker}
       {mapMarkers}
     </MapContainer>

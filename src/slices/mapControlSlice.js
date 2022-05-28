@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { isEqual, find } from 'lodash-es';
-import chicken from 'apis/chicken.json';
 import ctprvn from 'apis/polygon_ctprvn.json';
 import sig from 'apis/polygon_sig.json';
 // import emd from 'apis/polygon_emd.json';
@@ -30,6 +29,7 @@ const initialState = {
   },
   myLocation: null,
   clickLocation: null,
+  searchResults: [],
   markerPositions: [],
   polygonFeatures: [],
   centerAddress: '',
@@ -154,11 +154,12 @@ export const mapSlice = createSlice({
       state.overlay[action.payload] = !state.overlay[action.payload];
     },
     /**
-     * 마커 사용하기(임시)
+     * 검색 결과(좌표 정보 포함)
      * @param {*} state
+     * @param {*} action
      */
-    setChickenMarkers: state => {
-      state.markerPositions = chicken.positions;
+    setSearchResults: (state, action) => {
+      state.searchResults = action.payload;
     },
     /**
      * 클릭한 지점 좌표
@@ -188,7 +189,7 @@ export const {
   zoomIn,
   zoomOut,
   toggleOverlayMapType,
-  setChickenMarkers,
+  setSearchResults,
   setClickLocation,
 } = mapSlice.actions;
 
