@@ -47,12 +47,6 @@ const GlobalStyle = createGlobalStyle`
     height: 100%;
     overflow: hidden;
     color: rgb(31 41 55);
-    display: grid;
-    grid-template-rows: 100%;
-    grid-template-columns: 384px auto;
-    @media screen and (max-width: 640px) {
-      grid-template-columns: auto;
-    }
   }
 
   h1 {

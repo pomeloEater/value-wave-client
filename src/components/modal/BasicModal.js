@@ -15,6 +15,7 @@ const ModalContainer = styled.div`
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 1000;
 `;
 
 // const ModalDimLayer = styled.div``;

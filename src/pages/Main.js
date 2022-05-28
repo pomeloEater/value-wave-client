@@ -1,4 +1,5 @@
 import React from 'react';
+import styled from 'styled-components';
 import Header from 'components/header/Header';
 import { Map } from 'components/map';
 import SearchAside from 'components/aside/SearchAside';
@@ -12,15 +13,27 @@ const center = {
 };
 const level = 4;
 
+const MainWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 100%;
+  grid-template-columns: 384px auto;
+  @media screen and (max-width: 640px) {
+    grid-template-columns: auto;
+  }
+`;
+
 const Main = () => {
   const { searchMode } = useSelector(state => state.viewControl);
 
   return (
-    <>
+    <MainWrapper>
       <Header />
       {searchMode ? <SearchAside /> : <BasicAside />}
       <Map id="mapContainer" level={level} center={center} />
-    </>
+    </MainWrapper>
   );
 };
 

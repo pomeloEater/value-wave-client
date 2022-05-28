@@ -18,14 +18,18 @@ const MarkerWrapper = styled.div`
 const WindowWrapper = styled.div`
   position: absolute;
   white-space: nowrap;
-  bottom: 1.3rem;
-  width: 4rem;
+  bottom: 1.1rem;
+  left: -0.4rem;
+  width: max-content;
   height: auto;
   text-align: center;
-  background-color: white !important;
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-sm);
+  background-color: white !important;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 3px solid slateblue;
   & * {
     margin: 0;
     padding: 0;
@@ -45,23 +49,8 @@ const WindowWrapper = styled.div`
   }
 `;
 
-const ItemType = styled.span`
-  width: 100%;
-  color: var(--color-gray-600);
-`;
-
-const ItemValue = styled.span`
-  background-color: slateblue;
-  font-size: 1rem;
-  color: white;
-`;
-const ItemYear = styled.span`
-  background-color: slateblue;
-  color: var(--color-gray-200);
-`;
-
 const InfoMarker = ({
-  item,
+  children,
   style,
   position,
   xAnchor,
@@ -114,9 +103,7 @@ const InfoMarker = ({
           onMouseOver={() => overlay.setZIndex(20)}
           onMouseLeave={() => overlay.setZIndex(10)}
         >
-          <ItemType>{item.type}</ItemType>
-          <ItemValue>{item.price}</ItemValue>
-          <ItemYear>{item.year}</ItemYear>
+          {children}
         </WindowWrapper>
       )}
     </MarkerWrapper>

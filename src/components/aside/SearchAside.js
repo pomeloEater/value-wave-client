@@ -6,8 +6,7 @@ import { setPnu, toggleSearch } from 'slices/viewControlSlice';
 import AsideSearch from 'components/aside/AsideSearch';
 import { getKakaoLatLng } from 'utils/kakaoUtils';
 import { setSearchResults } from 'slices/mapControlSlice';
-// import BasicModal from 'components/modal/BasicModal';
-// const { kakao } = window;
+import BasicModal from 'components/modal/BasicModal';
 
 /* 범례 */
 const AsideWrapper = styled.aside`
@@ -95,7 +94,7 @@ const SearchAside = () => {
   const [isLoading, setLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
-  // const [modalOpened, setModalOpened] = useState(true);
+  const [modalOpened, setModalOpened] = useState(true);
 
   /* functions */
   const handleClickEvent = () => {
@@ -131,12 +130,12 @@ const SearchAside = () => {
       });
   };
   const handleModalOpen = index => {
-    // setModalOpened(true);
+    setModalOpened(true);
     activeIndex == index ? setActiveIndex(null) : setActiveIndex(index);
   };
-  // const handleModalClose = () => {
-  //   setModalOpened(false);
-  // };
+  const handleModalClose = () => {
+    setModalOpened(false);
+  };
 
   return (
     <AsideWrapper>
@@ -168,11 +167,11 @@ const SearchAside = () => {
           </h5>
         )}
       </ResultsWrapper>
-      {/* {modalOpened && (
+      {modalOpened && (
         <BasicModal closeModal={handleModalClose} title={'테스트'}>
           테스트내용
         </BasicModal>
-      )} */}
+      )}
     </AsideWrapper>
   );
 };

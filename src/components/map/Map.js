@@ -43,25 +43,6 @@ const getMapMarker = (key, position, style, onClickEvent) => (
   />
 );
 
-const getInfoMarker = (
-  key,
-  item,
-  position,
-  style,
-  onMarkerClick,
-  onInfoClick
-) => (
-  <InfoMarker
-    key={key}
-    item={item}
-    style={style}
-    position={position}
-    clickable={true}
-    onMarkerClick={onMarkerClick}
-    onInfoClick={onInfoClick}
-  />
-);
-
 // 폴리곤 삭제 후 callback
 const clearPolygons = (_polygons, _setPolygons, _callback) => {
   _polygons.forEach(_polygon => {
@@ -167,13 +148,6 @@ const Map = ({ id, center, level }) => {
 
   /* 클릭 시 좌표 표출 */
   useKakaoEvent(map, 'click', e => {
-    console.log(
-      '%c KAKAO ',
-      'background-color: black;color:yellow;font-weight:bold',
-      e,
-      e.latLng,
-      e.point
-    );
     const latLng = {
       latitude: e.latLng.getLat(),
       longitude: e.latLng.getLng(),
@@ -201,7 +175,6 @@ const Map = ({ id, center, level }) => {
   useEffect(() => {
     if (isNull(map) || isNull(myLocation) || isUndefined(myLocation)) return;
     setMyLocationMarker(getMapMarker(null, myLocation, { background: 'red' }));
-    console.log(myLocation); // TODO 삭제 필요
     const locPosition = getKakaoLatLng({ position: myLocation });
     map.setLevel(4);
     map.setCenter(locPosition);
@@ -214,7 +187,7 @@ const Map = ({ id, center, level }) => {
     setClickMarker(
       getMapMarker(null, clickLocation, { background: 'hotpink' })
     );
-  }, [clickLocation, clickMarker]);
+  }, [clickLocation]);
 
   /* 마커 정보 추가 (임시) */
   useEffect(() => {
@@ -224,14 +197,22 @@ const Map = ({ id, center, level }) => {
     }
     let tempKey = 0;
     const newMapMarkers = markerPositions.map(position =>
-      tempKey % 10 == 3
-        ? getInfoMarker(
-            tempKey++,
-            { type: '상업용건물', year: "'20 12월", price: '2200억' },
-            position,
-            { background: 'aqua' }
-          )
-        : getMapMarker(tempKey++, position, { background: 'aqua' })
+      tempKey % 10 == 3 ? (
+        <InfoMarker
+          key={tempKey++}
+          style={{ background: 'aqua' }}
+          position={position}
+          clickable={true}
+          // onMarkerClick={onMarkerClick}
+          // onInfoClick={onInfoClick}
+        >
+          <p>타이틀</p>
+          <p>가격</p>
+          <p>연도</p>
+        </InfoMarker>
+      ) : (
+        getMapMarker(tempKey++, position, { background: 'aqua' })
+      )
     );
     setMapMarkers(newMapMarkers);
   }, [markerPositions]);
@@ -243,14 +224,18 @@ const Map = ({ id, center, level }) => {
       searchMarkers.foEach(searchMarker => searchMarker.setMap(null));
     }
     let tempKey = 0;
-    const newSearchMarkers = searchResults.map(position =>
-      getInfoMarker(
-        tempKey++,
-        { type: '상업용건물', year: "'20 12월", price: '2200억' },
-        position,
-        { background: 'aqua' }
-      )
-    );
+    const newSearchMarkers = searchResults.map(searchResult => (
+      <InfoMarker
+        key={tempKey++}
+        style={{ background: 'aqua' }}
+        position={{ entX: searchResult.entX, entY: searchResult.entY }}
+        clickable={true}
+        // onMarkerClick={onMarkerClick}
+        // onInfoClick={onInfoClick}
+      >
+        <p>{searchResult.bdNm}</p>
+      </InfoMarker>
+    ));
     setSearchMarkers(newSearchMarkers);
   }, [searchResults]);
 
