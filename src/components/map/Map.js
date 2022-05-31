@@ -193,7 +193,7 @@ const Map = ({ id, center, level }) => {
   useEffect(() => {
     if (isNull(markerPositions)) return;
     if (mapMarkers?.length > 0) {
-      mapMarkers.foEach(mapMarker => mapMarker.setMap(null));
+      mapMarkers.forEach(mapMarker => mapMarker.setMap(null));
     }
     let tempKey = 0;
     const newMapMarkers = markerPositions.map(position =>
@@ -221,7 +221,7 @@ const Map = ({ id, center, level }) => {
   useEffect(() => {
     if (isNull(searchResults)) return;
     if (searchMarkers?.length > 0) {
-      searchMarkers.foEach(searchMarker => searchMarker.setMap(null));
+      searchMarkers.forEach(searchMarker => searchMarker.setMap(null));
     }
     let tempKey = 0;
     const newSearchMarkers = searchResults.map(searchResult => (
