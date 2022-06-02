@@ -21,6 +21,9 @@ import {
   getPolygonFeature,
   setKakaoEvent,
 } from 'utils/kakaoUtils';
+import BasicModal from 'components/modal/BasicModal';
+import EstateContent from 'components/modal/content/EstateContent.';
+import { setPnu } from 'slices/viewControlSlice';
 // import { getPolygonFeature } from 'utils/kakaoUtils';
 const { kakao } = window;
 
@@ -126,6 +129,7 @@ const Map = ({ id, center, level }) => {
   const [searchMarkers, setSearchMarkers] = useState([]);
   const [clickMarker, setClickMarker] = useState([]);
   const [layerPolygons, setLayerPolygons] = useState([]);
+  const [modalOpened, setModalOpened] = useState(false);
 
   /* 지도 초기화 */
   useEffect(() => {
@@ -135,9 +139,7 @@ const Map = ({ id, center, level }) => {
   /* 중심좌표 -> 법정동 정보  */
   useKakaoEvent(map, 'tilesloaded', async () => {
     try {
-      await dispatch(
-        setAddressFromCenter(map.getCenter())
-      ).unwrap();
+      await dispatch(setAddressFromCenter(map.getCenter())).unwrap();
       return dispatch(setLevelDivision(map.getLevel()));
     } catch (error) {
       console.error(error);
@@ -179,12 +181,29 @@ const Map = ({ id, center, level }) => {
   }, [myLocation]);
 
   /* 클릭 위치 마커 추가 (임시) */
+
+  const handleModalOpen = () => {
+    setModalOpened(true);
+  };
+  const handleModalClose = () => {
+    setModalOpened(false);
+  };
+
   useEffect(() => {
     if (isNull(map) || isNull(clickLocation) || isUndefined(clickLocation))
       return;
     setClickMarker(
       getMapMarker(null, clickLocation, { background: 'hotpink' })
     );
+    console.log(clickLocation);
+    const x = clickLocation?.longitude,
+      y = clickLocation?.latitude;
+    fetch(`/api/local/get-pnu/${x}/${y}`)
+      .then(res => res.json())
+      .then(json => {
+        dispatch(setPnu(json.data));
+        handleModalOpen();
+      });
   }, [clickLocation]);
 
   /* 마커 정보 추가 (임시) */
@@ -219,7 +238,8 @@ const Map = ({ id, center, level }) => {
   useEffect(() => {
     if (isNull(searchResults)) return;
     if (searchMarkers?.length > 0) {
-      searchMarkers.forEach(searchMarker => searchMarker.setMap(null));
+      // searchMarkers.forEach(searchMarker => searchMarker.setMap(null));
+      // TODO TypeError: e.setMap is not a function at Map.js:239:58
     }
     let tempKey = 0;
     const newSearchMarkers = searchResults.map(searchResult => (
@@ -231,7 +251,7 @@ const Map = ({ id, center, level }) => {
         // onMarkerClick={onMarkerClick}
         // onInfoClick={onInfoClick}
       >
-        {!isUndefined(searchResult.bdNm) && <p>{searchResult.bdNm}</p>}
+        {isUndefined(searchResult.bdNm) ? <></> : <p>{searchResult.bdNm}</p>}
       </InfoMarker>
     ));
     setSearchMarkers(newSearchMarkers);
@@ -244,6 +264,11 @@ const Map = ({ id, center, level }) => {
       {searchMarkers}
       {clickMarker}
       {mapMarkers}
+      {modalOpened && (
+        <BasicModal closeModal={handleModalClose} title={'부동산종합정보'}>
+          <EstateContent />
+        </BasicModal>
+      )}
     </MapContainer>
   );
 };
