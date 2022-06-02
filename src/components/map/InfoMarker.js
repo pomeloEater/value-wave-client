@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getKakaoLatLng } from 'utils/kakaoUtils';
@@ -39,13 +39,14 @@ const WindowWrapper = styled.div`
   }
   &::before {
     content: '';
+    position: absolute;
+    display: block;
+    top: 100%;
+    margin-top: 1px;
     border-color: slateblue transparent;
     border-style: solid;
     border-width: 0.9rem 0.9rem 0 0;
     box-shadow: var(--shadow-sm);
-    display: block;
-    top: 100%;
-    position: absolute;
   }
 `;
 
@@ -56,7 +57,6 @@ const InfoMarker = ({
   xAnchor,
   yAnchor,
   zIndex,
-  clickable,
   onCreate,
   onMarkerClick,
   onInfoClick,
@@ -64,12 +64,10 @@ const InfoMarker = ({
   const { map } = useSelector(state => state.mapControl);
   const kakaoPosition = getKakaoLatLng({ position });
   const container = useRef(null);
-  const [visible, setVisible] = useState(true);
 
   const overlay = new kakao.maps.CustomOverlay({
     position: kakaoPosition,
     map,
-    clickable,
     xAnchor,
     yAnchor,
     zIndex,
@@ -89,17 +87,11 @@ const InfoMarker = ({
   }, [map, overlay]);
 
   return (
-    <MarkerWrapper
-      style={style}
-      ref={container}
-      onClick={onMarkerClick}
-      onClickCapture={() => setVisible(!visible)}
-    >
-      {visible && (
+    <MarkerWrapper style={style} ref={container} onClick={onMarkerClick}>
+      {children && (
         <WindowWrapper
           style={style}
           onClick={onInfoClick}
-          onClickCapture={() => setVisible(!visible)}
           onMouseOver={() => overlay.setZIndex(20)}
           onMouseLeave={() => overlay.setZIndex(10)}
         >
