@@ -1,17 +1,11 @@
-/**
- * Aside.js
- * author: owen
- * date: 2022-04-19
- * description: 메인-좌측 하단 매물 영역(미정)
- */
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 // import { MdOutlineKeyboardArrowUp } from 'react-icons/md';
 import { useSelector } from 'react-redux';
 
 /* 범례 */
 const AsideWrapper = styled.aside`
-  position: absolute;
+  position: inherit;
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -22,9 +16,10 @@ const AsideWrapper = styled.aside`
   border-left: 1px;
   gap: 0.5rem;
   @media ${({ theme }) => theme.device.mobile} {
-    width: 100%;
-    height: auto;
-    bottom: 0;
+    /* width: 100%; */
+    /* height: auto; */
+    /* bottom: 0; */
+    display: none;
   }
   @media ${({ theme }) => theme.device.laptop} {
   }
@@ -40,24 +35,16 @@ const LocationWrapper = styled.div`
   }
 `;
 
-const Aside = () => {
+const BasicAside = () => {
   const { centerAddress } = useSelector(state => state.mapControl);
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    fetch('/hello')
-      .then(res => res.text())
-      .then(message => setMessage(message));
-  });
 
   return (
     <AsideWrapper>
       <LocationWrapper>
-        <h1>{centerAddress}</h1>
-        <h6>{message}</h6>
+        <h3>{centerAddress}</h3>
       </LocationWrapper>
     </AsideWrapper>
   );
 };
 
-export default Aside;
+export default BasicAside;

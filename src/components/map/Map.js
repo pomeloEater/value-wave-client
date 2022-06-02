@@ -12,17 +12,27 @@ import {
   initMap,
   setAddressFromCenter,
   setLevelDivision,
+  setClickLocation,
 } from 'slices/mapControlSlice';
 import { MapControl, Marker, InfoMarker } from 'components/map';
 import useKakaoEvent from 'hooks/useKakaoEvent';
-import { getPolygonFeature, setKakaoEvent } from 'utils/kakaoUtils';
+import {
+  getKakaoLatLng,
+  getPolygonFeature,
+  setKakaoEvent,
+} from 'utils/kakaoUtils';
+import BasicModal from 'components/modal/BasicModal';
+import EstateContent from 'components/modal/content/EstateContent.';
+import { setPnu } from 'slices/viewControlSlice';
 // import { getPolygonFeature } from 'utils/kakaoUtils';
 const { kakao } = window;
 
 /** ELEMENTS **/
 const MapContainer = styled.div`
+  position: relative;
+  float: left;
   width: 100%;
-  height: 100%;
+  height: inherit;
 `;
 
 /** FUNCTIONS **/
@@ -33,25 +43,6 @@ const getMapMarker = (key, position, style, onClickEvent) => (
     position={position}
     clickable={true}
     onClickEvent={onClickEvent}
-  />
-);
-
-const getInfoMarker = (
-  key,
-  item,
-  position,
-  style,
-  onMarkerClick,
-  onInfoClick
-) => (
-  <InfoMarker
-    key={key}
-    item={item}
-    style={style}
-    position={position}
-    clickable={true}
-    onMarkerClick={onMarkerClick}
-    onInfoClick={onInfoClick}
   />
 );
 
@@ -96,8 +87,7 @@ const getCenterCoords = coordinates => {
 
 // 폴리곤 생성
 const getPolygon = (map, feature) => {
-  const { properties, path, coordinates } = getPolygonFeature(feature);
-  console.log(properties, path);
+  const { path, coordinates } = getPolygonFeature(feature);
   const polygon = new kakao.maps.Polygon({
     map,
     path,
@@ -126,12 +116,20 @@ const getPolygon = (map, feature) => {
 /** COMPONENTS **/
 const Map = ({ id, center, level }) => {
   const dispatch = useDispatch();
-  const { map, myLocation, markerPositions, polygonFeatures } = useSelector(
-    state => state.mapControl
-  );
+  const {
+    map,
+    myLocation,
+    clickLocation,
+    markerPositions,
+    searchResults,
+    polygonFeatures,
+  } = useSelector(state => state.mapControl);
   const [myLocationMarker, setMyLocationMarker] = useState(null);
   const [mapMarkers, setMapMarkers] = useState([]);
+  const [searchMarkers, setSearchMarkers] = useState([]);
+  const [clickMarker, setClickMarker] = useState([]);
   const [layerPolygons, setLayerPolygons] = useState([]);
+  const [modalOpened, setModalOpened] = useState(false);
 
   /* 지도 초기화 */
   useEffect(() => {
@@ -139,21 +137,22 @@ const Map = ({ id, center, level }) => {
   }, []);
 
   /* 중심좌표 -> 법정동 정보  */
-  useKakaoEvent(map, 'tilesloaded', () => {
-    fetch(dispatch(setAddressFromCenter(map.getCenter()))).then(() => {
-      dispatch(setLevelDivision(map.getLevel()));
-    });
+  useKakaoEvent(map, 'tilesloaded', async () => {
+    try {
+      await dispatch(setAddressFromCenter(map.getCenter())).unwrap();
+      return dispatch(setLevelDivision(map.getLevel()));
+    } catch (error) {
+      console.error(error);
+    }
   });
 
   /* 클릭 시 좌표 표출 */
   useKakaoEvent(map, 'click', e => {
-    console.log(
-      '%c KAKAO ',
-      'background-color: black;color:yellow;font-weight:bold',
-      e,
-      e.latLng,
-      e.point
-    );
+    const latLng = {
+      latitude: e.latLng.getLat(),
+      longitude: e.latLng.getLng(),
+    };
+    dispatch(setClickLocation(latLng));
   });
 
   /* 확대레벨 -> 폴리곤 레이어 */
@@ -176,39 +175,100 @@ const Map = ({ id, center, level }) => {
   useEffect(() => {
     if (isNull(map) || isNull(myLocation) || isUndefined(myLocation)) return;
     setMyLocationMarker(getMapMarker(null, myLocation, { background: 'red' }));
-    const locPosition = new kakao.maps.LatLng(
-      myLocation.latitude,
-      myLocation.longitude
-    );
+    const locPosition = getKakaoLatLng({ position: myLocation });
     map.setLevel(4);
     map.setCenter(locPosition);
   }, [myLocation]);
+
+  /* 클릭 위치 마커 추가 (임시) */
+
+  const handleModalOpen = () => {
+    setModalOpened(true);
+  };
+  const handleModalClose = () => {
+    setModalOpened(false);
+  };
+
+  useEffect(() => {
+    if (isNull(map) || isNull(clickLocation) || isUndefined(clickLocation))
+      return;
+    setClickMarker(
+      getMapMarker(null, clickLocation, { background: 'hotpink' })
+    );
+    console.log(clickLocation);
+    const x = clickLocation?.longitude,
+      y = clickLocation?.latitude;
+    fetch(`/api/local/get-pnu/${x}/${y}`)
+      .then(res => res.json())
+      .then(json => {
+        dispatch(setPnu(json.data));
+        handleModalOpen();
+      });
+  }, [clickLocation]);
 
   /* 마커 정보 추가 (임시) */
   useEffect(() => {
     if (isNull(markerPositions)) return;
     if (mapMarkers?.length > 0) {
-      mapMarkers.foEach(mapMarker => mapMarker.setMap(null));
+      mapMarkers.forEach(mapMarker => mapMarker.setMap(null));
     }
     let tempKey = 0;
     const newMapMarkers = markerPositions.map(position =>
-      tempKey % 10 == 3
-        ? getInfoMarker(
-            tempKey++,
-            { type: '상업용건물', year: "'20 12월", price: '2200억' },
-            position,
-            { background: 'aqua' }
-          )
-        : getMapMarker(tempKey++, position, { background: 'aqua' })
+      tempKey % 10 == 3 ? (
+        <InfoMarker
+          key={tempKey++}
+          style={{ background: 'aqua' }}
+          position={position}
+          clickable={true}
+          // onMarkerClick={onMarkerClick}
+          // onInfoClick={onInfoClick}
+        >
+          <p>타이틀</p>
+          <p>가격</p>
+          <p>연도</p>
+        </InfoMarker>
+      ) : (
+        getMapMarker(tempKey++, position, { background: 'aqua' })
+      )
     );
     setMapMarkers(newMapMarkers);
   }, [markerPositions]);
+
+  /* 검색결과 정보 추가  */
+  useEffect(() => {
+    if (isNull(searchResults)) return;
+    if (searchMarkers?.length > 0) {
+      // searchMarkers.forEach(searchMarker => searchMarker.setMap(null));
+      // TODO TypeError: e.setMap is not a function at Map.js:239:58
+    }
+    let tempKey = 0;
+    const newSearchMarkers = searchResults.map(searchResult => (
+      <InfoMarker
+        key={tempKey++}
+        style={{ background: 'aqua' }}
+        position={{ entX: searchResult.entX, entY: searchResult.entY }}
+        clickable={true}
+        // onMarkerClick={onMarkerClick}
+        // onInfoClick={onInfoClick}
+      >
+        {isUndefined(searchResult.bdNm) ? <></> : <p>{searchResult.bdNm}</p>}
+      </InfoMarker>
+    ));
+    setSearchMarkers(newSearchMarkers);
+  }, [searchResults]);
 
   return (
     <MapContainer id={id} center={center} level={level}>
       <MapControl />
       {myLocationMarker}
+      {searchMarkers}
+      {clickMarker}
       {mapMarkers}
+      {modalOpened && (
+        <BasicModal closeModal={handleModalClose} title={'부동산종합정보'}>
+          <EstateContent />
+        </BasicModal>
+      )}
     </MapContainer>
   );
 };

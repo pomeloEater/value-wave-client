@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { getKakaoLatLng } from 'utils/kakaoUtils';
@@ -18,14 +18,18 @@ const MarkerWrapper = styled.div`
 const WindowWrapper = styled.div`
   position: absolute;
   white-space: nowrap;
-  bottom: 1.3rem;
-  width: 4rem;
+  bottom: 1.1rem;
+  left: -0.4rem;
+  width: max-content;
   height: auto;
   text-align: center;
-  background-color: white !important;
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-sm);
+  background-color: white !important;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 3px solid slateblue;
   & * {
     margin: 0;
     padding: 0;
@@ -35,52 +39,35 @@ const WindowWrapper = styled.div`
   }
   &::before {
     content: '';
+    position: absolute;
+    display: block;
+    top: 100%;
+    margin-top: 1px;
     border-color: slateblue transparent;
     border-style: solid;
     border-width: 0.9rem 0.9rem 0 0;
     box-shadow: var(--shadow-sm);
-    display: block;
-    top: 100%;
-    position: absolute;
   }
 `;
 
-const ItemType = styled.span`
-  width: 100%;
-  color: var(--color-gray-600);
-`;
-
-const ItemValue = styled.span`
-  background-color: slateblue;
-  font-size: 1rem;
-  color: white;
-`;
-const ItemYear = styled.span`
-  background-color: slateblue;
-  color: var(--color-gray-200);
-`;
-
 const InfoMarker = ({
-  item,
+  children,
   style,
   position,
   xAnchor,
   yAnchor,
   zIndex,
-  clickable,
   onCreate,
   onMarkerClick,
   onInfoClick,
 }) => {
   const { map } = useSelector(state => state.mapControl);
-  const kakaoPosition = getKakaoLatLng(position);
+  const kakaoPosition = getKakaoLatLng({ position });
   const container = useRef(null);
-  const [visible, setVisible] = useState(true);
 
   const overlay = new kakao.maps.CustomOverlay({
     position: kakaoPosition,
     map,
-    clickable,
     xAnchor,
     yAnchor,
     zIndex,
@@ -100,23 +87,15 @@ const InfoMarker = ({
   }, [map, overlay]);
 
   return (
-    <MarkerWrapper
-      style={style}
-      ref={container}
-      onClick={onMarkerClick}
-      onClickCapture={() => setVisible(!visible)}
-    >
-      {visible && (
+    <MarkerWrapper style={style} ref={container} onClick={onMarkerClick}>
+      {children && (
         <WindowWrapper
           style={style}
           onClick={onInfoClick}
-          onClickCapture={() => setVisible(!visible)}
           onMouseOver={() => overlay.setZIndex(20)}
           onMouseLeave={() => overlay.setZIndex(10)}
         >
-          <ItemType>{item.type}</ItemType>
-          <ItemValue>{item.price}</ItemValue>
-          <ItemYear>{item.year}</ItemYear>
+          {children}
         </WindowWrapper>
       )}
     </MarkerWrapper>

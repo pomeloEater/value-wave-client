@@ -6,14 +6,14 @@
  */
 import React from 'react';
 import styled from 'styled-components';
-import Search from 'components/header/Search';
+import HeaderSearch from 'components/header/HeaderSearch';
 
 const HeaderWrapper = styled.header`
   position: absolute;
   z-index: 20;
   display: flex;
   flex-direction: column;
-  padding: 1.25rem;
+  padding: 1rem;
   width: 24rem;
   row-gap: 0.5rem;
   @media ${({ theme }) => theme.device.mobile} {
@@ -28,7 +28,7 @@ const HeaderWrapper = styled.header`
 const Header = () => {
   return (
     <HeaderWrapper>
-      <Search />
+      <HeaderSearch />
     </HeaderWrapper>
   );
 };

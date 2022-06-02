@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { isEqual, find } from 'lodash-es';
-import chicken from 'apis/chicken.json';
 import ctprvn from 'apis/polygon_ctprvn.json';
 import sig from 'apis/polygon_sig.json';
 // import emd from 'apis/polygon_emd.json';
@@ -29,6 +28,8 @@ const initialState = {
     DISTRICT: false,
   },
   myLocation: null,
+  clickLocation: null,
+  searchResults: [],
   markerPositions: [],
   polygonFeatures: [],
   centerAddress: '',
@@ -82,7 +83,6 @@ const getAddressFromCenter = createAsyncThunk(
 const getLevelDivision = createAsyncThunk(
   'mapControl/setLevelDivision',
   async zoomLevel => {
-    console.log('zoomlevel', zoomLevel);
     let data = null;
     if (zoomLevel > 10) {
       data = ctprvn;
@@ -115,11 +115,14 @@ export const mapSlice = createSlice({
       const { id, center, level } = action.payload;
       const container = document.getElementById(id || 'mapContainer');
       const options = {
-        center: getKakaoLatLng(center),
+        center: getKakaoLatLng({
+          position: center,
+        }),
         level,
       };
       const kakaomap = new kakao.maps.Map(container, options);
       kakaomap.setMaxLevel(12);
+      kakaomap.setCursor('default');
       state.map = kakaomap;
     },
     /**
@@ -150,11 +153,20 @@ export const mapSlice = createSlice({
       state.overlay[action.payload] = !state.overlay[action.payload];
     },
     /**
-     * 마커 사용하기(임시)
+     * 검색 결과(좌표 정보 포함)
      * @param {*} state
+     * @param {*} action
      */
-    setChickenMarkers: state => {
-      state.markerPositions = chicken.positions;
+    setSearchResults: (state, action) => {
+      state.searchResults = action.payload;
+    },
+    /**
+     * 클릭한 지점 좌표
+     * @param {*} state
+     * @param {*} action {latitude, longitude}
+     */
+    setClickLocation: (state, action) => {
+      state.clickLocation = action.payload;
     },
   },
   extraReducers: builder => {
@@ -176,7 +188,8 @@ export const {
   zoomIn,
   zoomOut,
   toggleOverlayMapType,
-  setChickenMarkers,
+  setSearchResults,
+  setClickLocation,
 } = mapSlice.actions;
 
 export {

@@ -1,24 +1,46 @@
-import { has, isEqual, isNull } from 'lodash-es';
+import { isEqual, isNull, keys } from 'lodash-es';
+import proj4 from 'proj4';
 const { kakao } = window;
+
+// projection 설정
+proj4.defs([
+  [
+    'GRS80',
+    '+proj=tmerc +lat_0=38 +lon_0=127.5 +k=0.9996 +x_0=1000000 +y_0=2000000 +ellps=GRS80 +units=m +no_defs',
+  ],
+  ['WGS84', '+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs'],
+]);
 
 /**
  * 좌표 객체(WGS84) 생성
- * @param {json} position : 위도,경도로 이루어진 json;
- * @returns
+ * @param {position, latType} position: 위/경도로 이루어진 json / latType: 경도 표기명
+ * @returns kakao.maps.LatLng
  */
-const getKakaoLatLng = position => {
-  let kakaoPosition = null;
-  if (has(position, 'lng')) {
-    kakaoPosition = new kakao.maps.LatLng(position.lat, position.lng);
-  } else if (has(position, 'lon')) {
-    kakaoPosition = new kakao.maps.LatLng(position.lat, position.lon);
-  } else {
-    kakaoPosition = new kakao.maps.LatLng(
-      position.latitude,
-      position.longitude
-    );
+const getKakaoLatLng = props => {
+  const { position, latType } = props;
+
+  // latType이 없는 경우를 위해 position에서 가져오기
+  let keyArray = keys(position);
+  let latIndex = keyArray.findIndex(
+    key => key == 'lng' || key == 'lon' || key == 'entX' || key == 'longitude'
+  );
+  let latTypeFromPosition = keyArray[latIndex];
+  // GRS80인 경우 좌표계 변환
+  let projArray = null;
+  if (latTypeFromPosition == 'entX') {
+    projArray = proj4('GRS80', 'WGS84', [position.entX, position.entY]);
   }
-  return kakaoPosition;
+  switch (latType || latTypeFromPosition) {
+    case 'lng':
+      return new kakao.maps.LatLng(position.lat, position.lng);
+    case 'lon':
+      return new kakao.maps.LatLng(position.lat, position.lon);
+    case 'entX':
+      return new kakao.maps.LatLng(projArray[1], projArray[0]);
+    case 'longitude':
+    default:
+      return new kakao.maps.LatLng(position.latitude, position.longitude);
+  }
 };
 
 /**
