@@ -83,7 +83,6 @@ const getAddressFromCenter = createAsyncThunk(
 const getLevelDivision = createAsyncThunk(
   'mapControl/setLevelDivision',
   async zoomLevel => {
-    console.log('zoomlevel', zoomLevel);
     let data = null;
     if (zoomLevel > 10) {
       data = ctprvn;

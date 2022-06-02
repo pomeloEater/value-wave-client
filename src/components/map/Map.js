@@ -84,8 +84,7 @@ const getCenterCoords = coordinates => {
 
 // 폴리곤 생성
 const getPolygon = (map, feature) => {
-  const { properties, path, coordinates } = getPolygonFeature(feature);
-  console.log(properties, path);
+  const { path, coordinates } = getPolygonFeature(feature);
   const polygon = new kakao.maps.Polygon({
     map,
     path,
@@ -136,10 +135,9 @@ const Map = ({ id, center, level }) => {
   /* 중심좌표 -> 법정동 정보  */
   useKakaoEvent(map, 'tilesloaded', async () => {
     try {
-      const result = await dispatch(
+      await dispatch(
         setAddressFromCenter(map.getCenter())
       ).unwrap();
-      console.log(result);
       return dispatch(setLevelDivision(map.getLevel()));
     } catch (error) {
       console.error(error);
@@ -233,7 +231,7 @@ const Map = ({ id, center, level }) => {
         // onMarkerClick={onMarkerClick}
         // onInfoClick={onInfoClick}
       >
-        <p>{searchResult.bdNm}</p>
+        {!isUndefined(searchResult.bdNm) && <p>{searchResult.bdNm}</p>}
       </InfoMarker>
     ));
     setSearchMarkers(newSearchMarkers);
