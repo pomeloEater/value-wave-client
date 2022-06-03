@@ -22,7 +22,7 @@ import {
   setKakaoEvent,
 } from 'utils/kakaoUtils';
 import BasicModal from 'components/modal/BasicModal';
-import EstateContent from 'components/modal/content/EstateContent.';
+import EstateContent from 'components/modal/content/EstateContent';
 import { setPnu } from 'slices/viewControlSlice';
 // import { getPolygonFeature } from 'utils/kakaoUtils';
 const { kakao } = window;
@@ -195,7 +195,6 @@ const Map = ({ id, center, level }) => {
     setClickMarker(
       getMapMarker(null, clickLocation, { background: 'hotpink' })
     );
-    console.log(clickLocation);
     const x = clickLocation?.longitude,
       y = clickLocation?.latitude;
     fetch(`/api/local/get-pnu/${x}/${y}`)

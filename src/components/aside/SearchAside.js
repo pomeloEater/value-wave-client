@@ -7,7 +7,7 @@ import AsideSearch from 'components/aside/AsideSearch';
 import { getKakaoLatLng } from 'utils/kakaoUtils';
 import { setSearchResults } from 'slices/mapControlSlice';
 import BasicModal from 'components/modal/BasicModal';
-import EstateContent from 'components/modal/content/EstateContent.';
+import EstateContent from 'components/modal/content/EstateContent';
 
 /* 범례 */
 const AsideWrapper = styled.aside`

@@ -1,5 +1,5 @@
 import { isEqual, isNull } from 'lodash-es';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 
@@ -15,20 +15,7 @@ const BookButton = styled.button`
     props.isActive ? `var(--color-gray-500)` : `var(--color-gray-300)`};
 `;
 
-const LandBook = () => {
-  const { pnu } = useSelector(state => state.viewControl);
-  const [landBook, setLandBook] = useState(null); // 토지대장
-  useEffect(() => {
-    fetch(`/estate/get-land-book/${pnu}`)
-      .then(res => res.json())
-      .then(json => {
-        if (isEqual('success', json['_result_'])) {
-          setLandBook(json.data[0]);
-        } else {
-          setLandBook(null);
-        }
-      });
-  }, [pnu]);
+const LandBook = ({landBook}) => {
   return (
     <>
       <table style={{ width: '100%', textAlign: 'center' }}>
@@ -57,23 +44,7 @@ const LandBook = () => {
   );
 };
 
-const BuildingBook = () => {
-  const { pnu } = useSelector(state => state.viewControl);
-  const [isLoading, setLoading] = useState(true);
-  const [buildingBook, setBuildingBook] = useState(null); // 건축대장
-  useEffect(() => {
-    setLoading(true);
-    fetch(`/estate/get-building-book/${pnu}`)
-      .then(res => res.json())
-      .then(json => {
-        if (isEqual('success', json['_result_'])) {
-          setBuildingBook(json.data);
-        } else {
-          setBuildingBook(null);
-        }
-        setLoading(false);
-      });
-  }, [pnu]);
+const BuildingBook = ({isLoading, buildingBook}) => {
   return (
     <table style={{ width: '100%', textAlign: 'center' }}>
       <thead
@@ -125,20 +96,7 @@ const BuildingBook = () => {
   );
 };
 
-const OfficialPrice = () => {
-  const { pnu } = useSelector(state => state.viewControl);
-  const [officialPrice, setOfficialPrice] = useState(null); // 공시지가
-  useEffect(() => {
-    fetch(`/estate/get-official-price/${pnu}`)
-      .then(res => res.json())
-      .then(json => {
-        if (isEqual('success', json['_result_'])) {
-          setOfficialPrice(json.data);
-        } else {
-          setOfficialPrice(null);
-        }
-      });
-  }, [pnu]);
+const OfficialPrice = ({officialPrice}) => {
   return (
     <table style={{ width: '100%', textAlign: 'center' }}>
       <thead style={{ backgroundColor: `var(--color-gray-100)` }}>
@@ -168,20 +126,7 @@ const OfficialPrice = () => {
   );
 };
 
-const IndividualPrice = () => {
-  const { pnu } = useSelector(state => state.viewControl);
-  const [individualPrice, setIndividualPrice] = useState(null); // 개별주택가격
-  useEffect(() => {
-    fetch(`/estate/get-individual-price/${pnu}`)
-      .then(res => res.json())
-      .then(json => {
-        if (isEqual('success', json['_result_'])) {
-          setIndividualPrice(json.data);
-        } else {
-          setIndividualPrice(null);
-        }
-      });
-  }, [pnu]);
+const IndividualPrice = ({individualPrice}) => {
   return (
     <table style={{ width: '100%', textAlign: 'center' }}>
       <thead style={{ backgroundColor: `var(--color-gray-100)` }}>
@@ -225,20 +170,7 @@ const IndividualPrice = () => {
   );
 };
 
-const ApartmentPrice = () => {
-  const { pnu } = useSelector(state => state.viewControl);
-  const [apartmentPrice, setApartmentPrice] = useState(null); // 개별주택가격
-  useEffect(() => {
-    fetch(`/estate/get-apartment-price/${pnu}`)
-      .then(res => res.json())
-      .then(json => {
-        if (isEqual('success', json['_result_'])) {
-          setApartmentPrice(json.data);
-        } else {
-          setApartmentPrice(null);
-        }
-      });
-  }, [pnu]);
+const ApartmentPrice = ({apartmentPrice}) => {
   return (
     <table style={{ width: '100%', textAlign: 'center' }}>
       <thead style={{ backgroundColor: `var(--color-gray-100)` }}>
@@ -271,7 +203,72 @@ const ApartmentPrice = () => {
 };
 
 const EstateContent = () => {
+  const { pnu } = useSelector(state => state.viewControl);
   const [activeTabName, setActiveTabName] = useState('landBook');
+  const [landBook, setLandBook] = useState(null);
+  const [buildingBook, setBuildingBook] = useState(null);
+  const [officialPrice, setOfficialPrice] = useState(null); // 공시지가
+  const [individualPrice, setIndividualPrice] = useState(null); // 개별주택가격
+  const [apartmentPrice, setApartmentPrice] = useState(null); // 개별주택가격
+  const [isLoading, setLoading] = useState(true);
+
+  useMemo(() => {
+    fetch(`/estate/get-land-book/${pnu}`)
+      .then(res => res.json())
+      .then(json => {
+        if (isEqual('success', json['_result_'])) {
+          setLandBook(json.data[0]);
+        } else {
+          setLandBook(null);
+        }
+      });
+  }, [pnu]);
+  useMemo(() => {
+    setLoading(true);
+    fetch(`/estate/get-building-book/${pnu}`)
+      .then(res => res.json())
+      .then(json => {
+        if (isEqual('success', json['_result_'])) {
+          setBuildingBook(json.data);
+        } else {
+          setBuildingBook(null);
+        }
+        setLoading(false);
+      });
+  }, [pnu]);
+  useMemo(() => {
+    fetch(`/estate/get-official-price/${pnu}`)
+      .then(res => res.json())
+      .then(json => {
+        if (isEqual('success', json['_result_'])) {
+          setOfficialPrice(json.data);
+        } else {
+          setOfficialPrice(null);
+        }
+      });
+  }, [pnu]);
+  useMemo(() => {
+    fetch(`/estate/get-individual-price/${pnu}`)
+      .then(res => res.json())
+      .then(json => {
+        if (isEqual('success', json['_result_'])) {
+          setIndividualPrice(json.data);
+        } else {
+          setIndividualPrice(null);
+        }
+      });
+  }, [pnu]);
+  useMemo(() => {
+    fetch(`/estate/get-apartment-price/${pnu}`)
+      .then(res => res.json())
+      .then(json => {
+        if (isEqual('success', json['_result_'])) {
+          setApartmentPrice(json.data);
+        } else {
+          setApartmentPrice(null);
+        }
+      });
+  }, [pnu]);
   return (
     <div>
       <ButtonWrapper>
@@ -315,11 +312,11 @@ const EstateContent = () => {
         {
           /* content area */
           {
-            landBook: <LandBook />,
-            buildingBook: <BuildingBook />,
-            officialPrice: <OfficialPrice />,
-            individualPrice: <IndividualPrice />,
-            apartmentPrice: <ApartmentPrice />,
+            landBook: <LandBook landBook={landBook}/>,
+            buildingBook: <BuildingBook buildingBook={buildingBook} isLoading={isLoading}/>,
+            officialPrice: <OfficialPrice officialPrice={officialPrice}/>,
+            individualPrice: <IndividualPrice individualPrice={individualPrice}/>,
+            apartmentPrice: <ApartmentPrice apartmentPrice={apartmentPrice}/>,
           }[activeTabName]
         }
       </div>
